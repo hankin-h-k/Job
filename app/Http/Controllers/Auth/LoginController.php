@@ -54,57 +54,17 @@ class LoginController extends Controller
             session(['session_key'=>$session['session_key']]);
             $openid = $session['openid'];
             $wechat =  Wechat::where('openid', $openid)->first();
-            
-
-            /**
-             * 邀请人记录
-             */
-            $from_openid = $request->input('from_openid');
-            $marriage = '';
-            $from_avatar = '';
-            if ($from_openid) {
-                // $this->addInviteHistory($openid, $from_openid);
-                $other_wechat = Wechat::with('user')->where('openid', $from_openid)->first();
-                if ($other_wechat) {
-                    //邀请人头像
-                    $from_avatar = $other_wechat->avatar2?$other_wechat->avatar2:$other_wechat->avatar;
-                    //邀请人姓名
-                    $marriage = $other_wechat->nickname;
-                    if ($other_wechat->user && $other_wechat->user->name) {
-                        $marriage = $other_wechat->user->name;
-                    }
-                }
+            if ($wechat) {
+                return $this->success('login_success', compact('user', 'token'));
             }
 
             if($wechat->user_id){
-                $user = User::withTrashed()->findOrFail($wechat->user_id);
+                $user = User::findOrFail($wechat->user_id);
                 if ($user) {
-                    $user = $user->restore();
-                    $registered = true;
-                    $user = $this->guard()->loginUsingId($wechat->user_id, true);
-                    if (!empty($user)) {
-                        $token = $user->createToken($user->mobile)->accessToken; 
-                    }
+                    $token = $user->createToken($user->mobile)->accessToken; 
                 }
-                
             }
-            
-            if ($user) {
-                $avatar = Wechat::where('user_id', $user->id)->value('avatar2');
-                $user->avatar = $avatar;
-                //动态
-                $content = '登录【福恋】成功';
-                $data = [
-                    'user_id'=>$user->id,
-                    'content'=>$content,
-                ];
-                $this->dynamic->addDynamic($data);
-                $this->addAccountDynamic($user->id, $content);
-                //未读消息
-                $news_count = $this->userCon->newsCount($user->id);
-                $user->news_count = $news_count;
-            }
-            return $this->success('login_success', compact('user', 'token', 'openid', 'marriage', 'from_avatar'));
+            return $this->success('login_success', compact('user', 'token'));
         }else{
             return $this->failure('wechat login failed');
         }
@@ -131,5 +91,82 @@ class LoginController extends Controller
         }
         return $session;
     
+    }
+
+    /*
+     * 微信资料更新
+     */
+    public function wechatRegister(Request $request)
+    {   
+        $mobile = $request->input('mobile');
+        if (empty($mobile)) {
+            return $this->failure('请输入手机号');
+        }
+        $user = User::where('mobile', $request->mobile)->first();
+        if (empty($user)) {
+            $user = new User();
+            $user->mobile = $mobile;
+        }
+             
+        if (empty($request->name)) {
+            return $this->failure('请输入姓名');
+        }
+        if($request->name != $user->name && $request->input('name')){
+            $user->name = $request->input('name');
+        }
+        $code = $request->input('code');
+        if (empty($code)) {
+            return $this->failure('信息无效，请重启小程序');
+        }
+        $session = $this->getWechatSession($code);
+        if ($session && isset($session['openid'])) {
+            $wechat = Wechat::where('openid', $session['openid'])->first();
+            if (empty($wechat)) {
+                $wechat = new Wechat;
+                $wechat->openid = $session['openid'];
+            }
+            $wechat->user_id = $user->id;
+            $wechat->save();
+            $session_key = $session['session_key'];
+            $result = $this->wechatUpdate($request, $session_key, $session['openid']);
+            $user = $this->guard()->loginUsingId($user->id, true);
+            $token = $user->createToken($user->mobile)->accessToken; 
+            return $this->success('register user info', compact('user', 'token'));
+        }else{
+            return $this->failure($session);
+        }
+    }
+
+    /*
+     * 微信资料更新
+     */
+    public function wechatUpdate($request,$session_key, $openid)
+    {   
+        if (!$request->iv || !$request->encryptedData) {
+            return ;
+        }
+        $mp = WechatService::app();
+        $user_info = $mp->encryptor->decryptData($session_key, $request->iv, $request->encryptedData);
+        $wechat = Wechat::where('openid', $openid)->firstOrFail();
+        // return false;
+        $wechat->nickname = $user_info['nickName'];
+        $wechat->gender = $user_info['gender'];
+        $wechat->city = $user_info['city'];
+        $wechat->province = $user_info['province'];
+        $wechat->country = isset($user_info['country'])?$user_info['country']:'中国';
+        if (empty($user_info['avatarUrl'])) {
+            if ($wechat->gender == 1) {
+                $avatar = 'http://images.ufutx.com/201811/12/0e8b72aae6fa640d9e73ed312edeebf3.png';
+            }else{
+                $avatar = 'http://images.ufutx.com/201811/12/dddd79aa2c2fc6a6f35e641f6b8fb8f5.png';
+            }   
+        }else{
+            $avatar = $user_info['avatarUrl']?$user_info['avatarUrl']:null;
+        }
+        $wechat->avatar = $avatar;
+        $wechat->unionid = $user_info['unionId'];
+        $wechat->save();
+
+        return;
     }
 }
