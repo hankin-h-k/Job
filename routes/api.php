@@ -16,3 +16,27 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('auth:api')->group(function () {
+	/**
+	 * 工作
+	 */
+	//工作列表
+	Route::get('/jobs', 'JobsController@jobs');
+	//工作详情
+	Route::get('/jobs/{job}', 'JobsController@job');
+	//工作报名
+	Route::post('jobs/{job}/join', 'JobsController@joinJob');
+	//收餐工作
+	Route::post('collect/jobs/{job}', 'JobsController@collectJob');
+
+	/**
+	 * 我的简历
+	 */
+	//我的简历
+	Route::get('user', 'UserController@user');
+	//修改简历
+	Route::put('user', 'UserController@updateUser');
+
+});
+
