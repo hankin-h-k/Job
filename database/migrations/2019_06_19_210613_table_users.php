@@ -16,8 +16,8 @@ class TableUsers extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('mobile', 20)->nullable()->after('name');
             $table->tinyInteger('sex')->default(1)->after('mobile');
-            $table->tinyInteger('age')->default(0)->after('sex');
-            $table->string('ducation', 10)->nullable()->after('age');
+            $table->string('birthday',20)->nullable()->after('sex');
+            $table->string('ducation', 10)->nullable()->after('birthday');
             $table->string('school', 50)->nullable()->after('ducation');
             $table->string('province', 20)->nullable()->after('school');
             $table->string('city',20)->nullable()->after('province');
@@ -36,7 +36,7 @@ class TableUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropcolumn(['mobile', 'sex', 'age', 'ducation', 'school', 'province', 'city', 'dist', 'job_type', 'pay_type']);
+            $table->dropcolumn(['mobile', 'sex', 'birthday', 'ducation', 'school', 'province', 'city', 'dist', 'job_type', 'pay_type']);
         });
     }
 }

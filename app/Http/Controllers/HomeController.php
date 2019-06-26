@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     /**
@@ -21,8 +21,11 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function home(Ad $ad)
     {
-        return view('home');
+        //广告列表
+        $ads = $ad->all();
+        return $this->success('ok', $ads);
     }
+
 }

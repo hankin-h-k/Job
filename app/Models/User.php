@@ -44,8 +44,24 @@ class User extends Authenticatable
         return $count?true:false;
     }
 
+    public function collectJob($job)
+    {
+        $collect = JobCollect::where('user_id', $this->id)->where('job_id', $job->id)->first();
+        if ($collect) {
+            $collect->delect();
+        }else{
+            $this->jobCollects()->create(['job_id'=>$job->id]);
+        }
+        return;
+    }
+
     public function forms()
     {
         return $this->hasMany(ApplicationForm::class);
+    }
+
+    public function jobCollects()
+    {
+        return $this->hasMany(JobCollect::class);
     }
 }
