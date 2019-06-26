@@ -19,9 +19,7 @@ Route::middleware('auth:api')->group(function () {
 	//添加兼职
 	Route::post('jobs', 'JobsController@storeJob');
 	//发布兼职
-	Route::put('release/jobs/{job}', 'JobsController@releaseJob');
-	//取消兼职
-	Route::put('cancel/jobs/{job}', 'JobsController@cancelJob');
+	Route::put('jobs/{job}/status', 'JobsController@updateJobStatus');
 	//兼职分类列表
 	Route::get('job/categories', 'JobsController@jobCategories');
 	//兼职分类详情
@@ -29,9 +27,9 @@ Route::middleware('auth:api')->group(function () {
 	//删除兼职分类
 	Route::delete('job/categories/{category}', 'JobsController@deleteJobCategory');
 	//兼职分类添加
-	Route::post('job/categories', 'JobsController@storeJobCategories');
+	Route::post('job/categories', 'JobsController@storeJobCategory');
 	//兼职分类修改
-	Route::put('job/categories/{category}', 'JobsController@updateJobCategories');
+	Route::put('job/categories/{category}', 'JobsController@updateJobCategory');
 	//广告列表
 	Route::get('ads', 'AdsController@ads');
 	//广告详情
