@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Utils\Str;
+use App\Utils\Str;
+use App\Models\ApplicationForm;
+use App\Models\Wechat;
 class UsersController extends Controller
 {
 	/**
@@ -13,7 +15,31 @@ class UsersController extends Controller
     public function user()
     {
     	$user = auth()->user();
+        $wechat = $user->wechat;
     	return $this->success('ok', $user);
+    }
+
+    /**
+     * 更新微信信息
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function updateWechat(Request $request)
+    {
+        $user = auth()->user();
+        $user_info = $request->input('user_info');
+        if (count($user_info)) {
+            if (isset($user_info['nickName'])) {
+                $user->name = $user_info['nickName'];
+                $user->save();
+                $user->wechat->nickname = $user->name;
+            }
+            if (isset($user_info['avatarUrl'])) {
+                $user->wechat->avatar = $user_info['avatarUrl'];
+            }
+            $user->wechat->save();
+        }
+        return $this->success('ok');
     }
 
     /**
@@ -67,5 +93,30 @@ class UsersController extends Controller
     	}
     	$user->save();
     	return $this->success('ok');
+    }
+
+    /**
+     * 我的报名
+     * @param  Request         $request [description]
+     * @param  ApplicationForm $form    [description]
+     * @return [type]                   [description]
+     */
+    public function myApplicationForm(Request $request)
+    {
+        $user = auth()->user();
+        $forms = $user->forms()->with('job')->orderBy('id', 'desc')->paginate();
+        return $this->success('ok', $forms);
+    }
+
+    /**
+     * 我的收藏
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function myCollects(Request $request)
+    {
+        $user = auth()->user();
+        $collects = $user->collects()->with('job')->orderBy('id', 'desc')->paginate();
+        return $this->success('ok', $collects);
     }
 }

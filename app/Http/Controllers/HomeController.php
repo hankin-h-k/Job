@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Ad;
+use App\Models\Article;
+use App\Models\Job;
 class HomeController extends Controller
 {
     /**
@@ -21,11 +23,15 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function home(Ad $ad)
+    public function home(Ad $ad, Article $Article, Job $job)
     {
         //广告列表
         $ads = $ad->all();
-        return $this->success('ok', $ads);
+        //文章
+        $articles = $article->all();
+        //推荐兼职
+        $jobs = $job->where('is_recommend', 1)->paginate();
+        return $this->success('ok', compact('ads', 'articles', 'jobs'));
     }
 
 }

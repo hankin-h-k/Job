@@ -8,4 +8,9 @@ class Job extends Model
 {
     protected $fillable = [];
     protected $guarded = [];
+
+    public function forms()
+    {
+    	return $this->hasMany(ApplicationForm::class);
+    }
 }

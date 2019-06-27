@@ -8,11 +8,16 @@ class WechatService
 	public function __construct()
     {
         $mini_config = [
-            'app_id' => config('wechat.mini_program.app_id'),
-            'secret' => config('wechat.mini_program.secret'),
+            'app_id' => config('wechat.mini_program.default.app_id'),
+            'secret' => config('wechat.mini_program.default.secret'),
         ];
         $app = Factory::miniProgram($mini_config);
         $this->app = $app;
+    }
+
+    public function app()
+    {
+        return $this->app;
     }
  	
  	/**

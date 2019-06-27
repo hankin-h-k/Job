@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use EasyWechat;
+use App\Models\User;
+use App\Models\Wechat;
+use WechatService;
 
 class LoginController extends Controller
 {
@@ -54,7 +59,7 @@ class LoginController extends Controller
             session(['session_key'=>$session['session_key']]);
             $openid = $session['openid'];
             $wechat =  Wechat::where('openid', $openid)->first();
-            if ($wechat) {
+            if (empty($wechat)) {
                 return $this->success('login_success', compact('user', 'token'));
             }
 
@@ -106,13 +111,9 @@ class LoginController extends Controller
         if (empty($user)) {
             $user = new User();
             $user->mobile = $mobile;
-        }
-             
-        if (empty($request->name)) {
-            return $this->failure('请输入姓名');
-        }
-        if($request->name != $user->name && $request->input('name')){
-            $user->name = $request->input('name');
+            $user->email = $mobile.'@test.com';
+            $user->name = '';
+            $user->save();
         }
         $code = $request->input('code');
         if (empty($code)) {
@@ -128,7 +129,7 @@ class LoginController extends Controller
             $wechat->user_id = $user->id;
             $wechat->save();
             $session_key = $session['session_key'];
-            $result = $this->wechatUpdate($request, $session_key, $session['openid']);
+            // $result = $this->wechatUpdate($request, $session_key, $session['openid']);
             $user = $this->guard()->loginUsingId($user->id, true);
             $token = $user->createToken($user->mobile)->accessToken; 
             return $this->success('register user info', compact('user', 'token'));
@@ -150,10 +151,10 @@ class LoginController extends Controller
         $wechat = Wechat::where('openid', $openid)->firstOrFail();
         // return false;
         $wechat->nickname = $user_info['nickName'];
-        $wechat->gender = $user_info['gender'];
-        $wechat->city = $user_info['city'];
-        $wechat->province = $user_info['province'];
-        $wechat->country = isset($user_info['country'])?$user_info['country']:'中国';
+        $wechat->sex = $user_info['gender'];
+        // $wechat->city = $user_info['city'];
+        // $wechat->province = $user_info['province'];
+        // $wechat->country = isset($user_info['country'])?$user_info['country']:'中国';
         if (empty($user_info['avatarUrl'])) {
             if ($wechat->gender == 1) {
                 $avatar = 'http://images.ufutx.com/201811/12/0e8b72aae6fa640d9e73ed312edeebf3.png';
@@ -164,9 +165,25 @@ class LoginController extends Controller
             $avatar = $user_info['avatarUrl']?$user_info['avatarUrl']:null;
         }
         $wechat->avatar = $avatar;
-        $wechat->unionid = $user_info['unionId'];
+        // $wechat->unionid = $user_info['unionId'];
         $wechat->save();
 
         return;
+    }
+
+    /**
+     * 获取微信手机号
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function getPhone(Request $request){
+        $mp = EasyWechat::miniProgram();
+        $session = $this->getWechatSession($request->code);
+        if(!isset($session['session_key'])){
+            return $this->failure('failure', $session);
+        }
+        $session_key = $session['session_key'];
+        $raw_data = $mp->encryptor->decryptData($session_key, $request->iv, $request->encryptedData);
+        return $this->success('ok',$raw_data);
     }
 }

@@ -16,6 +16,7 @@ class CreateArticles extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title')->nullable()->comment('标题');
+            $table->string('sub_title')->nullable()->comment('副标题');
             $table->string('pic')->nullable()->comment('图片');
             $table->string('path')->nullable()->comment('地址');
             $table->timestamps();

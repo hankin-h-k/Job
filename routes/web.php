@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::post('wechat/mobile', 'Auth\LoginController@getPhone');
 
 Route::middleware('auth')->group(function () {
 	//用户列表

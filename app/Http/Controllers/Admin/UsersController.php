@@ -27,6 +27,10 @@ class UsersController extends Controller
 
     public function informUser(Request $request, User $user)
     {
+        $form_id_obj = $user->getValidFormId();
+        if (empty($form_id_obj)) {
+            return $this->failure('用户没有通知标签');
+        }
     	$param = [];
     	\WechatService::informUser($param);
     	return $this->success('ok');
@@ -34,7 +38,7 @@ class UsersController extends Controller
 
     public function admins(Request $request)
     {
-        
+
     }
     
 }

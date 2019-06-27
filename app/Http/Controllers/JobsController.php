@@ -22,6 +22,10 @@ class JobsController extends Controller
             $sql->where('title', 'like', '%'.$keyword.'%');
           });
         }
+        $category_id = $request->input('category_id');
+        if ($category_id) {
+            $jobs = $jobs->where('category_id', $category_id);
+        }
         $jobs = $jobs->paginate();
         return $this->success('ok', $jobs);
     }
@@ -31,7 +35,9 @@ class JobsController extends Controller
       */
     public function job(Request $request, Job $job)
     {
-        return $this->success('ok', $job);
+        //已报名人
+        $members = $job->forms()->with('user')->limit(6)->get();
+        return $this->success('ok', compact('job', 'members'));
     }
 
     /**
@@ -76,6 +82,12 @@ class JobsController extends Controller
         return $this->success('ok');
     }
 
+    /**
+     * 活动分类
+     * @param  Request     $request  [description]
+     * @param  JobCategoty $category [description]
+     * @return [type]                [description]
+     */
     public function jobCategories(Request $request, JobCategoty $category)
     {
         $categories = $category->where('parent_id', 0)->get();

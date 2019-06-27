@@ -17,6 +17,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('wechat/login', 'Auth\LoginController@loginWechat');
+Route::post('wechat/register', 'Auth\LoginController@wechatRegister'); 
+Route::post('wechat/mobile', 'Auth\LoginController@getPhone');
+
 Route::middleware(['auth:api', 'add_form_id'])->group(function () {
 	/**
 	 * 工作
@@ -34,9 +38,15 @@ Route::middleware(['auth:api', 'add_form_id'])->group(function () {
 	 * 我的简历
 	 */
 	//我的简历
-	Route::get('user', 'UserController@user');
+	Route::get('user', 'UsersController@user');
 	//修改简历
-	Route::put('user', 'UserController@updateUser');
+	Route::put('user', 'UsersController@updateUser');
+	Route::put('wechat', 'UsersController@updateWechat');
+
+	/**
+	 * 首页
+	 */
+	Route::get('home', 'HomeController@home');
 
 });
 

@@ -48,4 +48,28 @@ class Handler extends ExceptionHandler
     {
         return parent::render($request, $exception);
     }
+
+    // public function prepareJsonResponse($request, Exception $e)
+    // {
+    //     $data['status'] = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+    //     if(config('app.debug')){
+    //         $data['file'] = $e->getFile();
+    //         $data['line'] = $e->getLine();
+    //         $data['traces'] = $e->getTrace();
+    //     }
+
+    //     $headers = $this->isHttpException($e) ? $e->getHeaders() : [];
+    //     $message = $e->getMessage();
+    //     if ($message == 'The given payload is invalid.') {
+    //         $message = '服务错误，请重试';
+    //     }
+    //     return new JsonResponse(
+    //         [ 'code'=>1,
+    //             'data'=>$data,
+    //             'message'=>$data['status'].':'.$message
+    //         ], 200, $headers,
+    //         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+    //     );
+        
+    // }
 }

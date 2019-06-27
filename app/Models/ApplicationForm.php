@@ -13,4 +13,9 @@ class ApplicationForm extends Model
     {
     	return $this->hasOne(Job::class, 'id', 'job_id');
     }
+
+    public function user()
+    {
+    	return $this->hasOne(User::Class, 'id', 'user_id');
+    }
 }
