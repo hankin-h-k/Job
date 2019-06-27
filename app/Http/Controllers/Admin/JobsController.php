@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
+use App\Models\JobCategoty;
 class JobsController extends Controller
 {
-    public function jobs(Request $request Job $job)
-    {
+    public function jobs(Request $request, Job $job)
+    {   
     	$jobs = $job->orderBY('id', 'desc')->paginate();
     	return $this->success('ok', $jobs);
     }
 
-    public function job(Request $reques;, Job $job)
+    public function job(Request $request, Job $job)
     {
     	return $this->success('ok', $job);
     }
@@ -101,7 +102,7 @@ class JobsController extends Controller
 
     public function jobCategories(Request $request, JobCategoty $category)
     {
-    	$categories = $category->orderByd('id', 'desc')->paginate();
+    	$categories = $category->orderBy('id', 'desc')->paginate();
     	return $this->success('ok', $categories);
     }
 
@@ -114,6 +115,9 @@ class JobsController extends Controller
     {
     	$data['parent_id'] = $request->input('parent_id', 0);
     	$data['name'] = $request->input('name');
+        if (empty($data['name'])) {
+            return $this->failure('请输入分类名称');
+        }
     	$category = $category->create($data);
     	return $this->success('ok', $category);
     }

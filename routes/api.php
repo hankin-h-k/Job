@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'add_form_id'])->group(function () {
 	/**
 	 * 工作
 	 */

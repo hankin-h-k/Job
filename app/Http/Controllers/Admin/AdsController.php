@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Models\Ad;
 class AdsController extends Controller
 {
     public function ads(Request $request, Ad $ad)
     {
-    	$ads = $ad->orderBy('id', 'desc')->pagiante();
+    	$ads = $ad->orderBy('id', 'desc')->paginate();
     	return $this->success('ok', $ads);
     }
 

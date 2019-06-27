@@ -8,6 +8,8 @@ Route::middleware('auth:api')->group(function () {
 	Route::get('users', 'UsersController@users');
 	//用户详情
 	Route::get('users/{user}', 'UsersController@user');
+	//通知用户
+	Route::get('inform/user/{user}', 'Admin\UsersController@informUser');
 	//兼职列表
 	Route::get('jobs', 'JobsController@jobs');
 	//兼职详情

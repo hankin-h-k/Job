@@ -30,7 +30,6 @@ class CreateJobs extends Migration
             $table->text('intro')->nullable()->comment('介绍');
             $table->string('linkman', 50)->nullable()->comment('联系人');
             $table->string('link_mobile')->nullable()->comment('联系电话');
-            $table->enum('status', ['UNDERWAY','FINISHED'])->default('FINISHED')->comment('状态');
             $table->timestamps();
         });
     }

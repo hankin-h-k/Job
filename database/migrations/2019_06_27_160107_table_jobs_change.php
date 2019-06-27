@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateJobTypes extends Migration
+class TableJobsChange extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateJobTypes extends Migration
      */
     public function up()
     {
-        Schema::create('job_types', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->integer('parent_id')->default(0);
-            $table->string('name', 50)->nullable();
-            $table->timestamps();
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->enum('status', ['UNDERWAY','FINISHED','UNPLAYED', 'CANCELED'])->default('UNPLAYED')->comment('状态')->after('link_mobile');
         });
     }
 
@@ -28,6 +25,8 @@ class CreateJobTypes extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_types');
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
     }
 }
