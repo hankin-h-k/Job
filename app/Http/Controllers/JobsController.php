@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\ApplicationForm;
 use App\Models\JobCategory;
+use App\Models\Address;
 class JobsController extends Controller
 {
     /**
@@ -35,6 +36,17 @@ class JobsController extends Controller
       */
     public function job(Request $request, Job $job)
     {
+        $job_category_name = '';
+        $sub_jon_category_name = '';
+        //工作类型
+        if ($job->category_id) {
+            $job_category = $category->where('id', $job->category_id)->first();
+            $sub_jon_category = $category->where('id', $job_category->parent_id)->first();
+            $job_category_name = $job_category->name;
+            $sub_jon_category_name = $sub_jon_category->name;
+        }
+        $job->job_category_name = $job_category_name;
+        $job->sub_jon_category_name = $sub_jon_category_name;
         //已报名人
         $members = $job->forms()->with('user')->limit(6)->get();
         return $this->success('ok', compact('job', 'members'));
@@ -91,10 +103,26 @@ class JobsController extends Controller
     public function jobCategories(Request $request, JobCategory $category)
     {
         $categories = $category->where('parent_id', 0)->get();
-        foreach ($categories as $category) {
-            $sub_categories = $category->where('parent_id', $category->id)->get();
-            $category->sub_categories = $sub_categories;
+        foreach ($categories as $category_obj) {
+            $sub_categories = $category->where('parent_id', $category_obj->id)->get();
+            $category_obj->sub_categories = $sub_categories;
         }
         return $this->success('ok', $categories);
+    }
+
+    /**
+     * 地址
+     * @param  Request $request [description]
+     * @param  Address $address [description]
+     * @return [type]           [description]
+     */
+    public function addresses(Request $request, Address $address)
+    {
+        $addresses = $address->where('parent_id', 0)->get();
+        foreach ($addresses as $address_obj) {
+            $sub_addresses = $address->where('parent_id', $address_obj->id)->get();
+            $address_obj->sub_addresses = $sub_addresses;
+        }
+        return $this->success('ok', $addresses);
     }
 }

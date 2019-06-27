@@ -33,6 +33,8 @@ Route::middleware(['auth:api', 'add_form_id'])->group(function () {
 	Route::post('jobs/{job}/join', 'JobsController@joinJob');
 	//收餐工作
 	Route::post('collect/jobs/{job}', 'JobsController@collectJob');
+	//工作类型
+	Route::get('job/categories', 'JobsController@jobCategories');
 
 	/**
 	 * 我的简历
