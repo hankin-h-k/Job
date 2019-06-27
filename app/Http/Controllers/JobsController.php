@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\ApplicationForm;
-use App\Models\JobCategoty;
+use App\Models\JobCategory;
 class JobsController extends Controller
 {
     /**
@@ -85,10 +85,10 @@ class JobsController extends Controller
     /**
      * 活动分类
      * @param  Request     $request  [description]
-     * @param  JobCategoty $category [description]
+     * @param  JobCategory $category [description]
      * @return [type]                [description]
      */
-    public function jobCategories(Request $request, JobCategoty $category)
+    public function jobCategories(Request $request, JobCategory $category)
     {
         $categories = $category->where('parent_id', 0)->get();
         foreach ($categories as $category) {

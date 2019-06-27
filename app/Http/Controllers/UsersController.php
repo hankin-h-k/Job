@@ -6,15 +6,27 @@ use Illuminate\Http\Request;
 use App\Utils\Str;
 use App\Models\ApplicationForm;
 use App\Models\Wechat;
+use App\Models\JobCategory;
 class UsersController extends Controller
 {
 	/**
 	 * 我的简历
 	 * @return [type] [description]
 	 */
-    public function user()
+    public function user(JobCategory $category)
     {
     	$user = auth()->user();
+        $job_category_name = '';
+        $sub_jon_category_name = '';
+        //工作类型
+        if ($user->category_id) {
+            $job_category = $category->where('id', $user->category_id)->first();
+            $sub_jon_category = $category->where('id', $job_category->parent_id)->first();
+            $job_category_name = $job_category->name;
+            $sub_jon_category_name = $sub_jon_category->name;
+        }
+        $user->job_category_name = $job_category_name;
+        $user->sub_jon_category_name = $sub_jon_category_name;
         $wechat = $user->wechat;
     	return $this->success('ok', $user);
     }
@@ -85,12 +97,18 @@ class UsersController extends Controller
     	if ($request->has("dist") && $request->dist != $user->dist) {
     		$user->dist = $request->dist;
     	}
-    	if ($request->has("job_type") && $request->job_type != $user->job_type) {
-    		$user->job_type = $request->job_type;
+        if ($request->has("address") && $request->address != $user->address) {
+            $user->address = $request->address;
+        }
+    	if ($request->has("category_id") && $request->category_id != $user->category_id) {
+    		$user->category_id = $request->category_id;
     	}
     	if ($request->has("pay_type") && $request->pay_type != $user->pay_type) {
     		$user->pay_type = $request->pay_type;
     	}
+        if ($user->name && $user->mobile && $user->sex && $user->birthday && $user->ducation && $user->school && $user->dist && $user->category_id && $user->pay_type) {
+            $user->is_completed = 1;
+        }
     	$user->save();
     	return $this->success('ok');
     }
