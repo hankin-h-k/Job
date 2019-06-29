@@ -35,7 +35,7 @@ class TableUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropcolumn(['mobile', 'sex', 'birthday', 'ducation', 'school', 'province', 'city', 'dist', 'job_type', 'pay_type']);
+            $table->dropcolumn(['mobile', 'sex', 'birthday', 'ducation', 'school', 'province', 'city', 'dist', 'pay_type']);
         });
     }
 }
