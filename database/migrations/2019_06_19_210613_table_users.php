@@ -22,7 +22,7 @@ class TableUsers extends Migration
             $table->string('province', 20)->nullable()->after('school');
             $table->string('city',20)->nullable()->after('province');
             $table->string('dist', 20)->nullable()->after('city');
-            $table->enum('pay_type', ['DAILY', 'MONTHLY'])->nullable()->after('job_type');
+            $table->enum('pay_type', ['DAILY', 'MONTHLY'])->nullable()->after('dist');
 
         });
     }
