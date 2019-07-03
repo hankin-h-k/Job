@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
 	//发布兼职
 	Route::put('jobs/{job}/status', 'JobsController@updateJobStatus');
 	//兼职分类列表
-	// Route::get('job/categories', 'Admin\JobsController@jobCategories');
+	Route::get('job/categories', 'Admin\JobsController@jobCategories');
 	//兼职分类详情
 	Route::get('job/categories/{categoty}', 'Admin\JobsController@jobCategory')->where('categoty', '[0-9]+');
 	//删除兼职分类
@@ -55,8 +55,21 @@ Route::middleware('auth')->group(function () {
 	Route::delete('ads/{ad}', 'AdsController@deleteAd');
 	//广告修改
 	Route::put('ads/{ad}', 'AdsController@updateAd');
+
+
 });
+/**
+ * 文章
+ */
+//文章列表
+Route::get('articles', 'Admin\ArticlesController@articles');
+//文章详情
+Route::get('articles/{article}', 'Admin\ArticlesController@article');
+//文章创建
+Route::get('add/articles', 'Admin\ArticlesController@storeArticle');
+//文章修改
+Route::get('update/articles/{article}', 'Admin\ArticlesController@updateArticle');
+//文章删除
+Route::get('del/articles/{article}', 'Admin\ArticlesController@deleteArticle');
 
-
-
-
+Route::get('test', 'Controller@test');

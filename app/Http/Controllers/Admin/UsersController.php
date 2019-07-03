@@ -10,7 +10,17 @@ class UsersController extends Controller
 {
     public function users(Request $request, User $user)
     {	
-    	$users = $user->orderBy('id', 'desc')->paginate();
+        $is_completed = $request->input('is_completed');
+    	$users = $user->where('is_completed', $is_completed);
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $keyword = trim($keyword);
+            $users = $users->where(function($sql) use($keyword){
+                $sql->where('mobile', 'like', '%'.$keyword.'%')
+                ->orWhere('name', 'like', '%'.$keyword.'%');
+            });
+        }
+        $users = $users->orderBy('id', 'desc')->paginate();
     	return $this->success('ok', $users);
     }
 
@@ -36,9 +46,17 @@ class UsersController extends Controller
     	return $this->success('ok');
     }
 
-    public function admins(Request $request)
+    /**
+     * 屏蔽用户
+     * @param  Request $request [description]
+     * @param  User    $user    [description]
+     * @return [type]           [description]
+     */
+    public function shieldUser(Request $request, User $user)
     {
-
+        $user->is_shielded = $user->is_shielded?0:1;
+        $user->save();
+        return $this->success('ok', $user);
     }
-    
+
 }

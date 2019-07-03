@@ -3,13 +3,25 @@
 use Illuminate\Http\Request;
 
 
+
 Route::middleware('auth:api')->group(function () {
+	/**
+	 * 用户
+	 */
 	//用户列表
 	Route::get('users', 'UsersController@users');
 	//用户详情
 	Route::get('users/{user}', 'UsersController@user');
 	//通知用户
-	Route::get('inform/user/{user}', 'Admin\UsersController@informUser');
+	Route::post('inform/user/{user}', 'UsersController@informUser');
+	//屏蔽用户
+	Route::put('shield/users/{user}', 'UsersController@shieldUser');
+	//用户报名列表
+	Route::get('users/{user}/applycations', 'UsersController@userApplycations');
+
+	/**
+	 * 兼职
+	 */
 	//兼职列表
 	Route::get('jobs', 'JobsController@jobs');
 	//兼职详情
@@ -32,6 +44,10 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('job/categories', 'JobsController@storeJobCategory');
 	//兼职分类修改
 	Route::put('job/categories/{category}', 'JobsController@updateJobCategory');
+
+	/**
+	 * 广告
+	 */
 	//广告列表
 	Route::get('ads', 'AdsController@ads');
 	//广告详情
@@ -42,4 +58,18 @@ Route::middleware('auth:api')->group(function () {
 	Route::delete('ads/{ad}', 'AdsController@deleteAd');
 	//广告修改
 	Route::put('ads/{ad}', 'AdsController@updateAd');
+
+	/**
+	 * 文章
+	 */
+	//文章列表
+	Route::get('articles', 'ArticlesController@articles');
+	//文章详情
+	Route::get('articles/{article}', 'ArticlesController@article');
+	//文章创建
+	Route::post('articles', 'ArticlesController@storeArticle');
+	//文章修改
+	Route::put('articles/{article}', 'ArticlesController@updateArticle');
+	//文章删除
+	Route::delete('articles/{article}', 'ArticlesController@deleteArticle');
 });

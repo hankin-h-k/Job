@@ -23,14 +23,15 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function home(Ad $ad, Article $Article, Job $job)
+    public function home(Request $request, Ad $ad, Article $Article, Job $job)
     {
         //广告列表
         $ads = $ad->all();
         //文章
         $articles = $article->all();
         //推荐兼职
-        $jobs = $job->where('is_recommend', 1)->paginate();
+        $type = $request->input('type', 'MONTHLY');
+        $jobs = $job->where('is_recommend', 1)->where('type', $type)->paginate();
         return $this->success('ok', compact('ads', 'articles', 'jobs'));
     }
 

@@ -57,9 +57,10 @@ class User extends Authenticatable
     public function getValidFormId()
     {
         $seven_day_age = date('Y-m-d H:i:s', strtotime('-7 day'));
-        $form = $this->forms()->where('status', 0)->where('created_at', '>', $seven_day_age)->orderBy('id', 'asc')->first();
+        $form = $this->formIds()->where('status', 0)->where('created_at', '>', $seven_day_age)->orderBy('id', 'asc')->first();
         return $form;
     }
+
     public function forms()
     {
         return $this->hasMany(ApplicationForm::class);

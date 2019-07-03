@@ -32,7 +32,7 @@ class TableJobsAddIsRecommend extends Migration
     public function down()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->dropColumn(['is_recommend', 'is_top', 'pic', 'category_id']);
+            $table->dropColumn(['is_recommend', 'is_top', 'pic', 'category_id','wechat', 'link_email']);
         });
     }
 }

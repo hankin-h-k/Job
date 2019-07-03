@@ -7,18 +7,36 @@ use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobCategoty;
 class JobsController extends Controller
-{
+{   
+    /**
+     * 兼职列表
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function jobs(Request $request, Job $job)
     {   
     	$jobs = $job->orderBY('id', 'desc')->paginate();
     	return $this->success('ok', $jobs);
     }
 
+    /**
+     * 兼职详情
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function job(Request $request, Job $job)
     {
     	return $this->success('ok', $job);
     }
 
+    /**
+     * 添加兼职
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function storeJob(Request $request, Job $job)
     {
     	$data['title'] = $request->input('title');
@@ -39,6 +57,12 @@ class JobsController extends Controller
     	return $this->success('ok', $job);
     }
 
+    /**
+     * 修改兼职
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function updateJob(Request $request, Job $job)
     {
     	if ($request->has('title') && $request->title != $job->title) {
@@ -87,12 +111,24 @@ class JobsController extends Controller
     	return $this->success('ok');
     }
 
+    /**
+     * 删除兼职
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function deleteJob(Request $request, Job $job)
     {
     	$job->delete();
     	return $this->success('ok');
     }
 
+    /**
+     * 修改兼职状态
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
     public function updateJobStatus(Request $request, Job $job)
     {
     	$status = $request->input('status');
@@ -100,17 +136,35 @@ class JobsController extends Controller
     	return $this->success('ok');
     }
 
+    /**
+     * 兼职分类列表
+     * @param  Request     $request  [description]
+     * @param  JobCategoty $category [description]
+     * @return [type]                [description]
+     */
     public function jobCategories(Request $request, JobCategoty $category)
     {
     	$categories = $category->orderBy('id', 'desc')->paginate();
     	return $this->success('ok', $categories);
     }
 
+    /**
+     * 兼职分类详情
+     * @param  Request     $request  [description]
+     * @param  JobCategoty $category [description]
+     * @return [type]                [description]
+     */
     public function jobCategory(Request $request, JobCategoty $category)
     {
     	return $this->success('ok', $category);
     }
 
+    /**
+     * 添加兼职分类
+     * @param  Request     $request  [description]
+     * @param  JobCategoty $category [description]
+     * @return [type]                [description]
+     */
     public function storeJobCategory(Request $request, JobCategoty $category)
     {
     	$data['parent_id'] = $request->input('parent_id', 0);
@@ -122,6 +176,12 @@ class JobsController extends Controller
     	return $this->success('ok', $category);
     }
 
+    /**
+     * 修改兼职分类
+     * @param  Request     $request  [description]
+     * @param  JobCategoty $category [description]
+     * @return [type]                [description]
+     */
     public function updateJobCategory(Request $request, JobCategoty $category)
     {
     	if ($request->has('parent_id') && $request->parent_id != $category->parent_id) {
@@ -132,5 +192,18 @@ class JobsController extends Controller
     	}
     	$category->save();
     	return $this->success('ok');
+    }
+
+    /**
+     * 取消推荐、推荐兼职
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
+    public function recommendJob(Request $request, Job $job)
+    {
+        $job->is_recommend = $job->is_recommend?0:1;
+        $job->save();
+        return $this->success('ok', $job);
     }
 }

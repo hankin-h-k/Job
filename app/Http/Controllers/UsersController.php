@@ -119,10 +119,13 @@ class UsersController extends Controller
      * @param  ApplicationForm $form    [description]
      * @return [type]                   [description]
      */
-    public function myApplicationForm(Request $request)
+    public function myApplicationForms(Request $request)
     {
         $user = auth()->user();
-        $forms = $user->forms()->with('job')->orderBy('id', 'desc')->paginate();
+        $status = $request->input('status');
+        $forms = $user->forms()->with('job')->whereHas('job', function($sql) use($status){
+            $sql->where('status', $status);
+        })->orderBy('id', 'desc')->paginate();
         return $this->success('ok', $forms);
     }
 
@@ -131,7 +134,7 @@ class UsersController extends Controller
      * @param  Request $request [description]
      * @return [type]           [description]
      */
-    public function myCollects(Request $request)
+    public function myCollectJobs(Request $request)
     {
         $user = auth()->user();
         $collects = $user->collects()->with('job')->orderBy('id', 'desc')->paginate();

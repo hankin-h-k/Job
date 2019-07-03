@@ -227,6 +227,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'WechatService' => App\Facades\WechatService::class,
+        'UploadService' => App\Facades\UploadService::class,
         'EasyWechat' => Overtrue\LaravelWeChat\Facade::class,
     ],
 

@@ -30,7 +30,17 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/admin';
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'mobile';
+    }
 
     /**
      * Create a new controller instance.
@@ -112,6 +122,7 @@ class LoginController extends Controller
             $user = new User();
             $user->mobile = $mobile;
             $user->email = $mobile.'@test.com';
+            $user->password = bcrypt($mobile);
             $user->name = '';
             $user->save();
         }
@@ -185,5 +196,85 @@ class LoginController extends Controller
         $session_key = $session['session_key'];
         $raw_data = $mp->encryptor->decryptData($session_key, $request->iv, $request->encryptedData);
         return $this->success('ok',$raw_data);
+    }
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {   
+        $this->validateLogin($request);
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+
+        //本地登录
+        if ($this->attemptLogin($request)) {
+
+
+            //需要返回access_token
+            if($request->expectsJson()){
+                $user = $this->guard()->user();
+                if (empty($user->is_admin)) {
+                    return $this->failure('登陆失败,您还不是管理员!');
+                }
+                $user->access_token = $user->createToken($user->mobile)->accessToken; 
+                return $this->success('login_success', $user);
+            }else{
+                return $this->sendLoginResponse($request);
+            }
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+
+    public function logout(Request $request)
+    {
+        //logout api token
+        if ($request->expectsJson()) {
+            $token= $this->guard()->user()->token();
+            if(!$token){ //mobile api
+                // 获取 refresh_token
+                $refresh_token = \DB::table('oauth_refresh_tokens')
+                    ->where('access_token_id', $token->id)
+                    ->first();
+             
+                // 删除已经 revoke 的令牌
+                event(new AccessTokenCreated($token->id, $token->user_id, $token->client_id));
+                if($refresh_token){
+                    event(new RefreshTokenCreated($refresh_token->id, $token->id));
+                }
+                // revoke 用户注销前的令牌
+                if($token){
+                    $token->revoked=true;
+                    $token->save();
+                }
+             
+                // revoke 用户注销前的refresh_token
+                \DB::table('oauth_refresh_tokens')
+                    ->where('access_token_id', $token->id)
+                    ->update(['revoked' => true]);
+            }
+            return $this->success('logout_success');
+
+        }else{ //logout web session
+            $this->guard()->logout();
+            $request->session()->invalidate();
+            return redirect('/');
+        }
     }
 }
