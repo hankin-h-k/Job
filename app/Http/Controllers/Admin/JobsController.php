@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobCategoty;
+use App\Models\ApplicationForm;
 class JobsController extends Controller
 {   
     /**
@@ -16,7 +17,12 @@ class JobsController extends Controller
      */
     public function jobs(Request $request, Job $job)
     {   
-    	$jobs = $job->orderBY('id', 'desc')->paginate();
+        $jobs = $job->orderBy('is_top', 'desc')->orderBy('is_recommend', 'desc')->orderBy('id', 'desc');
+        $status = $request->input('status');
+        if ($status && $status != 'ALL') {
+            $jobs = $jobs->where('status', $status);
+        }
+        $jobs = $jobs->paginate();
     	return $this->success('ok', $jobs);
     }
 
@@ -137,6 +143,27 @@ class JobsController extends Controller
     }
 
     /**
+     * 兼职报名成员
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
+    public function jobMembers(Request $request, Job $job, ApplicationForm $form)
+    {
+        $forms = $form->with('user', 'job')->where('job_id', $job->id);
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $keyword = trim($keyword);
+            $forms = $forms->whereHas('user', function($sql) use($keyword){
+                $sql->where('name', 'like', '%'.$keyword.'%')
+                ->orWhere('mobile', 'like', '%'.$keyword.'%');
+            });
+        }
+        $forms = $forms->orderBy('id', 'desc')->paginate();
+        return $this->success('ok', $forms);
+    }
+
+    /**
      * 兼职分类列表
      * @param  Request     $request  [description]
      * @param  JobCategoty $category [description]
@@ -205,5 +232,17 @@ class JobsController extends Controller
         $job->is_recommend = $job->is_recommend?0:1;
         $job->save();
         return $this->success('ok', $job);
+    }
+
+    /**
+     * 只听兼职
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
+    public function topJob(Request $request, Job $job)
+    {
+        $job->top();
+        return $this->success('ok');
     }
 }

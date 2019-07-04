@@ -34,6 +34,12 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('jobs', 'JobsController@storeJob');
 	//发布兼职
 	Route::put('jobs/{job}/status', 'JobsController@updateJobStatus');
+	//推荐兼职
+	Route::put('recommend/jobs/{job}', 'JobsController@recommendJob');
+	//置顶兼职
+	Route::put('top/jobs/{job}', 'JobsController@topJob');
+	//兼职报名成员
+	Route::get('jobs/{job}/members', 'JobsController@jobMembers');
 	//兼职分类列表
 	Route::get('job/categories', 'JobsController@jobCategories');
 	//兼职分类详情

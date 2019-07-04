@@ -73,3 +73,5 @@ Route::get('update/articles/{article}', 'Admin\ArticlesController@updateArticle'
 Route::get('del/articles/{article}', 'Admin\ArticlesController@deleteArticle');
 
 Route::get('test', 'Controller@test');
+
+Route::get('jobs/{job}/members', 'Admin\JobsController@jobMembers');
