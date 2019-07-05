@@ -22,6 +22,10 @@ class JobsController extends Controller
         if ($status && $status != 'ALL') {
             $jobs = $jobs->where('status', $status);
         }
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $jobs = $jobs->where('title', 'like', '%'.$keyword.'%');
+        }
         $jobs = $jobs->paginate();
     	return $this->success('ok', $jobs);
     }

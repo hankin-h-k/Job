@@ -41,8 +41,7 @@ class Controller extends BaseController
 
 	public function test()
 	{
-		$result = \UploadService::test();
-		dd($result);
+		dd(bcrypt('15872844805'));
 	}
 
 
