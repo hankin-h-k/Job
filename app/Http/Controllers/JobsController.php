@@ -47,6 +47,7 @@ class JobsController extends Controller
         }
         $job->category_name = $category_name;
         $job->sub_category_name = $sub_category_name;
+        $category = $job->category;
         //已报名人
         $members = $job->forms()->with('user')->limit(6)->orderBy('id', 'desc')->get();
         return $this->success('ok', compact('job', 'members'));
@@ -100,12 +101,12 @@ class JobsController extends Controller
      * @param  JobCategory $category [description]
      * @return [type]                [description]
      */
-    public function jobCategories(Request $request, JobCategory $category)
+    public function jobCategories(Request $request, JobCategory $category_obj)
     {
-        $categories = $category->where('parent_id', 0)->get();
-        foreach ($categories as $category_obj) {
-            $sub_categories = $category->where('parent_id', $category_obj->id)->get();
-            $category_obj->sub_categories = $sub_categories;
+        $categories = $category_obj->where('parent_id', 0)->get();
+        foreach ($categories as $category) {
+            $sub_categories = $category_obj->where('parent_id', $category->id)->get();
+            $category->sub_categories = $sub_categories;
         }
         return $this->success('ok', $categories);
     }

@@ -15,8 +15,8 @@ class CreateAds extends Migration
     {
         Schema::create('ads', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('pic', 50)->nullable()->comment('图片');
-            $table->string('path', 50)->nullable()->comment('地址');
+            $table->string('pic')->nullable()->comment('图片');
+            $table->string('path')->nullable()->comment('地址');
             $table->timestamps();
         });
     }

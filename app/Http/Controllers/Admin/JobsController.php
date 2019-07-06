@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
-use App\Models\JobCategoty;
+use App\Models\JobCategory;
 use App\Models\ApplicationForm;
 class JobsController extends Controller
 {   
@@ -38,6 +38,7 @@ class JobsController extends Controller
      */
     public function job(Request $request, Job $job)
     {
+        $category = $job->category;
     	return $this->success('ok', $job);
     }
 
@@ -75,9 +76,15 @@ class JobsController extends Controller
      */
     public function updateJob(Request $request, Job $job)
     {
+        if ($request->has('pic') && $request->pic != $job->pic) {
+            $job->pic = $request->pic;
+        }
     	if ($request->has('title') && $request->title != $job->title) {
     		$job->title = $request->title;
     	}
+        if ($request->has('category_id') && $request->category_id != $job->category_id) {
+            $job->category_id = $request->category_id;
+        }
     	if ($request->has('job_time') && $request->job_time != $job->job_time) {
     		$job->job_time = $request->job_time;
     	}
@@ -117,6 +124,12 @@ class JobsController extends Controller
     	if ($request->has('link_mobile') && $request->link_mobile != $job->link_mobile) {
     		$job->link_mobile = $request->link_mobile;
     	}
+        if ($request->has('wechat') && $request->wechat != $job->wechat) {
+            $job->wechat = $request->wechat;
+        }
+        if ($request->has('link_email') && $request->link_email != $job->link_email) {
+            $job->link_email = $request->link_email;
+        }
     	$job->save();
     	return $this->success('ok');
     }
@@ -173,9 +186,20 @@ class JobsController extends Controller
      * @param  JobCategoty $category [description]
      * @return [type]                [description]
      */
-    public function jobCategories(Request $request, JobCategoty $category)
+    public function jobCategories(Request $request, JobCategory $category_obj)
     {
-    	$categories = $category->orderBy('id', 'desc')->paginate();
+    	$categories = $category_obj->where('parent_id',0)->orderBy('id', 'desc');
+        $nopage = $request->input('nopage', 0);
+        if ($nopage) {
+            $categories = $categories->get();
+        }else{
+            $categories = $categories->paginate();
+        }
+
+        foreach ($categories as $category) {
+             $sub_categories = $category_obj->where('parent_id',$category->id)->orderBy('id', 'desc')->get();
+             $category->sub_categories = $sub_categories;
+        }
     	return $this->success('ok', $categories);
     }
 
@@ -185,7 +209,7 @@ class JobsController extends Controller
      * @param  JobCategoty $category [description]
      * @return [type]                [description]
      */
-    public function jobCategory(Request $request, JobCategoty $category)
+    public function jobCategory(Request $request, JobCategory $category)
     {
     	return $this->success('ok', $category);
     }
@@ -196,7 +220,7 @@ class JobsController extends Controller
      * @param  JobCategoty $category [description]
      * @return [type]                [description]
      */
-    public function storeJobCategory(Request $request, JobCategoty $category)
+    public function storeJobCategory(Request $request, JobCategory $category)
     {
     	$data['parent_id'] = $request->input('parent_id', 0);
     	$data['name'] = $request->input('name');
@@ -213,7 +237,7 @@ class JobsController extends Controller
      * @param  JobCategoty $category [description]
      * @return [type]                [description]
      */
-    public function updateJobCategory(Request $request, JobCategoty $category)
+    public function updateJobCategory(Request $request, JobCategory $category)
     {
     	if ($request->has('parent_id') && $request->parent_id != $category->parent_id) {
     		$category->parent_id = $request->parent_id;

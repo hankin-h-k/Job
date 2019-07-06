@@ -29,4 +29,9 @@ class Job extends Model
     	}
     	return;
     }
+
+    public function category()
+    {
+        return $this->hasOne(JobCategory::class, 'id', 'category_id');
+    }
 }
