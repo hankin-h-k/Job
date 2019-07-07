@@ -20,6 +20,14 @@ Route::middleware('auth:api')->group(function () {
 	Route::get('users/{user}/applycations', 'UsersController@userApplycations');
 
 	/**
+	 * 管理员
+	 */
+	//管理员列表
+	Route::get('admins', 'UsersController@adminUsers');
+	//添加管理员
+	Route::put('users/{user}/admin', 'UsersController@updateAdmin');
+
+	/**
 	 * 兼职
 	 */
 	//兼职列表

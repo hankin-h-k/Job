@@ -57,6 +57,34 @@ class UsersController extends Controller
         $user->is_shielded = $user->is_shielded?0:1;
         $user->save();
         return $this->success('ok', $user);
+    }   
+
+    /**
+     * 后台用户
+     * @param  Request $request [description]
+     * @param  User    $user    [description]
+     * @return [type]           [description]
+     */
+    public function adminUsers(Request $request, User $user)
+    {
+        $users = $user->where('is_admin', 1)->paginate();
+        return $this->success('ok', $users);
+    }
+
+    /**
+     * 添加\删除管理员
+     * @param  Request $request [description]
+     * @param  User    $user    [description]
+     * @return [type]           [description]
+     */
+    public function updateAdmin(Request $request, User $user)
+    {
+        if ($user->is_admin) {//删除管理员
+            $user->update(['is_admin'=>0]);
+        }else{
+            $user->update(['is_admin'=>1, 'password'=>bcrypt($user->mobile)]);
+        }
+        return $this->success('ok');
     }
 
 }
