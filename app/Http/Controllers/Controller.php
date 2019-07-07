@@ -57,4 +57,21 @@ class Controller extends BaseController
 		return $this->success('ok', $response);
 	}
 
+    /**
+     * 时间段
+     * @param  [type] $start_time [description]
+     * @param  [type] $end_time   [description]
+     * @return [type]             [description]
+     */
+    public function daliy($start_time ,$end_time)
+    {
+        $strtime1 = strtotime($start_time);
+        $strtime2 = strtotime($end_time);  
+           
+        $day_arr[] = date('Y-m-d', $strtime1); // 当前月;  
+        while( ($strtime1 = strtotime('+1 day', $strtime1)) <= $strtime2){  
+            $day_arr[] = date('Y-m-d',$strtime1); // 取得递增月;   
+        } 
+        return $day_arr; 
+    }
 }

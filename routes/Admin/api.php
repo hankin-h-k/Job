@@ -18,6 +18,8 @@ Route::middleware('auth:api')->group(function () {
 	Route::put('shield/users/{user}', 'UsersController@shieldUser');
 	//用户报名列表
 	Route::get('users/{user}/applycations', 'UsersController@userApplycations');
+	//新增用户
+	Route::get('new/user/num', 'UsersController@newUserNum');
 
 	/**
 	 * 管理员

@@ -87,4 +87,44 @@ class UsersController extends Controller
         return $this->success('ok');
     }
 
+    public function newUserNum(Request $request, User $user)
+    {
+        //当天注册人数
+        $today_num = $user->where('created_at', '>=', date('Y-m-d'))->where('created_at', '<', date('Y-m-d', strtotime('+1 day')))->count();
+        //最近七天增长人数
+        $result = $this->getWeekStat();
+        $user_num_arr = $result['user_num_arr'];
+        $day_arr = $result['day_arr'];
+        return $this->success('ok', compact('today_num', 'user_num_arr', 'day_arr'));
+    }
+
+    /**
+     * 最近七天增长人数
+     * @param  [type] $user_ids    [description]
+     * @param  [type] $from_openid [description]
+     * @return [type]              [description]
+     */
+    public function getWeekStat()
+    {   
+        $end_time = date('Y-m-d', time());
+        $start_time = date('Y-m-d', strtotime('-6 day'));
+        //时间段
+        $day_arr = $this->daliy($start_time, $end_time);
+        $user_num_arr = [];
+        for ($i=0; $i < count($day_arr); $i++) { 
+            $day_start_time = $day_arr[$i];
+            if ($i < count($day_arr) - 1) {
+                $day_end_time = $day_arr[$i + 1];
+            }else{
+                $day_end_time = date('Y-m-d', strtotime('+1 day', strtotime($day_start_time)));
+            }
+            $user_num = User::whereBetween('created_at', [$day_start_time, $day_end_time])->count();
+            $user_num_arr[] = $user_num;
+
+        }
+        return $array = [
+            'user_num_arr'=>$user_num_arr,
+            'day_arr'=>$day_arr
+        ];
+    }
 }
