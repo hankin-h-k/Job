@@ -89,13 +89,15 @@ class UsersController extends Controller
 
     public function newUserNum(Request $request, User $user)
     {
+        //所有数据；
+        $all_num = $user->count();
         //当天注册人数
         $today_num = $user->where('created_at', '>=', date('Y-m-d'))->where('created_at', '<', date('Y-m-d', strtotime('+1 day')))->count();
         //最近七天增长人数
         $result = $this->getWeekStat();
         $user_num_arr = $result['user_num_arr'];
         $day_arr = $result['day_arr'];
-        return $this->success('ok', compact('today_num', 'user_num_arr', 'day_arr'));
+        return $this->success('ok', compact('today_num', 'user_num_arr', 'day_arr', 'all_num'));
     }
 
     /**
