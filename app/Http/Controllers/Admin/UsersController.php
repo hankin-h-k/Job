@@ -60,15 +60,63 @@ class UsersController extends Controller
     }   
 
     /**
-     * 后台用户
+     * 管理员用户
      * @param  Request $request [description]
      * @param  User    $user    [description]
      * @return [type]           [description]
      */
     public function adminUsers(Request $request, User $user)
     {
-        $users = $user->where('is_admin', 1)->paginate();
+        $users = $user->where('is_admin', 1);
+        $keyword = $request->input('keyword');
+        if (empty($keyword)) {
+            $keyword = trim($keyword);
+            $users->where('name', 'like', '%'.$keyword.'%')
+            ->orWhere('mobile', 'like', '%'.$keyword.'%');
+        }
+        $users = $users->paginate();
         return $this->success('ok', $users);
+    }
+
+    public function storeAdmin(Request $request, User $user)
+    {
+        $name = $request->input('name');
+        if (empty($name)) {
+            return $this->failure('请输入名称');
+        }
+        $mobile = $request->input('mobile');
+        if (empty($mobile)) {
+            return $this->failure('请输入手机号');
+        }
+        $password = $request->input('password');
+        if (empty($password)) {
+            return $this->failure('请输入密码');
+        }
+        $user_obj = $user->where('mobile', $mobile)->first();
+        if (empty($user_obj)) {
+            $user_obj = new User();
+            $user_obj->mobile = $mobile;
+        }
+        $user_obj->password = bcrypt($password);
+        $user_obj->name = $name;
+        $user_obj->email = $mobile.'@test.com';
+        $user_obj->is_admin = 1;
+        $user_obj->save();
+        return $this->success('ok', $user_obj);
+
+    }
+
+    /**
+     * 删除管理员
+     * @param  Request $request [description]
+     * @param  User    $user    [description]
+     * @return [type]           [description]
+     */
+    public function deleteAdmin(Request $request, User $user)
+    {
+        $user->is_admin =0;
+        $user->save();
+        return $this->success('ok');
     }
 
     /**

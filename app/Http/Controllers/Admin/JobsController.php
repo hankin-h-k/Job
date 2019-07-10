@@ -250,6 +250,18 @@ class JobsController extends Controller
     }
 
     /**
+     * 删除兼职分类
+     * @param  Request     $request  [description]
+     * @param  JobCategory $category [description]
+     * @return [type]                [description]
+     */
+    public function deleteJobCategory(Request $request, JobCategory $category)
+    {
+        $category->delete();
+        return $this->success('ok');
+    }
+
+    /**
      * 取消推荐、推荐兼职
      * @param  Request $request [description]
      * @param  Job     $job     [description]

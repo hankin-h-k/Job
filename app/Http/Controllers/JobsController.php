@@ -34,7 +34,7 @@ class JobsController extends Controller
       /**
       * 工作详情
       */
-    public function job(Request $request, Job $job)
+    public function job(Request $request, Job $job, JobCategory $category)
     {
         $category_name = '';
         $sub_category_name = '';

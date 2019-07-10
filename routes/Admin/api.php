@@ -26,8 +26,12 @@ Route::middleware('auth:api')->group(function () {
 	 */
 	//管理员列表
 	Route::get('admins', 'UsersController@adminUsers');
-	//添加管理员
+	//修改管理员
 	Route::put('users/{user}/admin', 'UsersController@updateAdmin');
+	//添加管理员
+	Route::post('admins', 'UsersController@storeAdmin');
+	//删除管理员
+	Route::delete('users/{user}/admin', 'UsersController@deleteAdmin');
 
 	/**
 	 * 兼职

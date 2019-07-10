@@ -123,7 +123,7 @@ class LoginController extends Controller
             $user->mobile = $mobile;
             $user->email = $mobile.'@test.com';
             $user->password = bcrypt($mobile);
-            $user->name = '';
+            $user->name = $mobile;
             $user->save();
         }
         $code = $request->input('code');
