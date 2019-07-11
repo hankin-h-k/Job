@@ -47,7 +47,7 @@ class User extends Authenticatable
     {
         $collect = JobCollect::where('user_id', $this->id)->where('job_id', $job->id)->first();
         if ($collect) {
-            $collect->delect();
+            $collect->delete();
         }else{
             $this->jobCollects()->create(['job_id'=>$job->id]);
         }

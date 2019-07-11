@@ -50,6 +50,8 @@ class JobsController extends Controller
         $category = $job->category;
         //已报名人
         $members = $job->forms()->with('user')->limit(6)->orderBy('id', 'desc')->get();
+        //是否收藏
+        $job->is_collected = auth()->user()->jobCollects()->where('job_id', $job->id)->first()?1:0;
         return $this->success('ok', compact('job', 'members'));
     }
 

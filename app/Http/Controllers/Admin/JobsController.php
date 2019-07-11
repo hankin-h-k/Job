@@ -62,6 +62,7 @@ class JobsController extends Controller
     	$data['reward'] = $request->input('reward');
     	$data['need_num'] = $request->input('need_num');
     	$data['intro'] = $request->input('intro');
+        $data['explain'] = $request->input('explain');
     	$data['linkman'] = $request->input('linkman');
     	$data['link_mobile'] = $request->input('link_mobile');
     	$job = $job->create($data);
@@ -118,6 +119,9 @@ class JobsController extends Controller
     	if ($request->has('intro') && $request->intro != $job->intro) {
     		$job->intro = $request->intro;
     	}
+        if ($request->has('explain') && $request->explain != $job->explain) {
+            $job->explain = $request->explain;
+        }
     	if ($request->has('linkman') && $request->linkman != $job->linkman) {
     		$job->linkman = $request->linkman;
     	}
