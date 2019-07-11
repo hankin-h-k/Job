@@ -29,6 +29,9 @@ Route::get('upload/signature', 'Controller@aliyunSignature');
 Route::middleware(['auth:api', 'add_form_id'])->group(function () {
 	//登出
 	Route::post('logout','Auth\LoginController@logout');
+	//重置密码
+    Route::post('admin/reset/password', 'Auth\ResetPasswordController@resetPassword');
+
 	/**
 	 * 工作
 	 */

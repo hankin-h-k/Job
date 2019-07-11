@@ -5,8 +5,6 @@ use Illuminate\Http\Request;
 
 
 Route::middleware('auth:api')->group(function () {
-	//重置密码
-    Route::post('/reset/password', 'Auth\ResetPasswordController@resetPassword');
 	/**
 	 * 用户
 	 */
