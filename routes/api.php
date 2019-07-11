@@ -26,44 +26,46 @@ Route::post('login', 'Auth\LoginController@login');
 //获取上传签名
 Route::get('upload/signature', 'Controller@aliyunSignature');
 
-Route::middleware(['auth:api', 'add_form_id'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
 	//登出
 	Route::post('logout','Auth\LoginController@logout');
 	//重置密码
     Route::post('admin/reset/password', 'Auth\ResetPasswordController@resetPassword');
+    Route::middleware(['add_form_id'])->group(function(){
+		/**
+		 * 工作
+		 */
+		//工作列表
+		Route::get('jobs', 'JobsController@jobs');
+		//工作详情
+		Route::get('jobs/{job}', 'JobsController@job');
+		//工作报名
+		Route::post('join/jobs/{job}', 'JobsController@joinJob');
+		//收餐工作
+		Route::post('collect/jobs/{job}', 'JobsController@collectJob');
+		//工作类型
+		Route::get('job/categories', 'JobsController@jobCategories');
 
-	/**
-	 * 工作
-	 */
-	//工作列表
-	Route::get('jobs', 'JobsController@jobs');
-	//工作详情
-	Route::get('jobs/{job}', 'JobsController@job');
-	//工作报名
-	Route::post('join/jobs/{job}', 'JobsController@joinJob');
-	//收餐工作
-	Route::post('collect/jobs/{job}', 'JobsController@collectJob');
-	//工作类型
-	Route::get('job/categories', 'JobsController@jobCategories');
+		/**
+		 * 我的
+		 */
+		//我的简历
+		Route::get('user', 'UsersController@user');
+		//修改简历
+		Route::put('user', 'UsersController@updateUser');
+		//修改微信信息
+		Route::put('wechat', 'UsersController@updateWechat');
+		//我的报名
+		Route::get('my/application/forms', 'UsersController@myApplicationForms');
+		//我的收藏
+		Route::get('my/collect/jobs', 'UsersController@myCollectJobs');
 
-	/**
-	 * 我的
-	 */
-	//我的简历
-	Route::get('user', 'UsersController@user');
-	//修改简历
-	Route::put('user', 'UsersController@updateUser');
-	//修改微信信息
-	Route::put('wechat', 'UsersController@updateWechat');
-	//我的报名
-	Route::get('my/application/forms', 'UsersController@myApplicationForms');
-	//我的收藏
-	Route::get('my/collect/jobs', 'UsersController@myCollectJobs');
+		/**
+		 * 首页
+		 */
+		Route::get('home', 'HomeController@home');
+    });
 
-	/**
-	 * 首页
-	 */
-	Route::get('home', 'HomeController@home');
 
 });
 
