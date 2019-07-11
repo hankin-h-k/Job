@@ -25,7 +25,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/admin';
 
     /**
      * Create a new controller instance.
@@ -34,6 +34,19 @@ class ResetPasswordController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        // $this->middleware('guest');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = auth()->user();
+        $password = $request->input("password");
+        $confirm_password = $request->input('confirm_password');
+        if ($password !== $confirm_password) {
+            return $this->failure('请确认密码是否一致');
+        }
+        $user->password = bcrypt($password);
+        $user->save();
+        return $this->success('ok');
     }
 }
