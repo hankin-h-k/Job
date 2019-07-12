@@ -71,8 +71,10 @@ class UsersController extends Controller
         $keyword = $request->input('keyword');
         if (empty($keyword)) {
             $keyword = trim($keyword);
-            $users->where('name', 'like', '%'.$keyword.'%')
-            ->orWhere('mobile', 'like', '%'.$keyword.'%');
+            $users = $users->where(function($sql) use($keyword){
+                $sql->where('name', 'like', '%'.$keyword.'%')
+                ->orWhere('mobile', 'like', '%'.$keyword.'%');
+            });
         }
         $users = $users->paginate();
         return $this->success('ok', $users);

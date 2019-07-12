@@ -200,7 +200,7 @@ class JobsController extends Controller
      */
     public function jobCategories(Request $request, JobCategory $category_obj)
     {
-    	$categories = $category_obj->where('parent_id',0)->orderBy('id', 'desc');
+    	$categories = $category_obj->where('parent_id',0);
         $nopage = $request->input('nopage', 0);
         if ($nopage) {
             $categories = $categories->get();
@@ -209,7 +209,7 @@ class JobsController extends Controller
         }
 
         foreach ($categories as $category) {
-             $sub_categories = $category_obj->where('parent_id',$category->id)->orderBy('id', 'desc')->get();
+             $sub_categories = $category_obj->where('parent_id',$category->id)->get();
              $category->sub_categories = $sub_categories;
         }
     	return $this->success('ok', $categories);
@@ -269,6 +269,9 @@ class JobsController extends Controller
      */
     public function deleteJobCategory(Request $request, JobCategory $category)
     {
+        if ($category->parent_id == 0) {
+            $category->where('parent_id', $category->id)->delete();
+        }
         $category->delete();
         return $this->success('ok');
     }

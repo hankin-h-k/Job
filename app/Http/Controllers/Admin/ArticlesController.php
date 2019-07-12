@@ -9,7 +9,16 @@ class ArticlesController extends Controller
 {
     public function articles(Request $request, Article $article)
     {
-    	$articles = $article->OrderBy('id', 'desc')->paginate();
+    	$articles = $article->orderBy('id', 'desc');
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $keyword = trim($keyword);
+            $articles = $articles->where(function($sql) use($keyword){
+                $sql->where('title', 'like', '%'.$keyword.'%')
+                ->orWhere('sub_title', 'like', '%'.$keyword.'%');
+            });
+        }
+        $articles = $articles->paginate();
     	return $this->success('ok', $articles);
     }
 
