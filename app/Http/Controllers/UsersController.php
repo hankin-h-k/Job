@@ -7,6 +7,7 @@ use App\Utils\Str;
 use App\Models\ApplicationForm;
 use App\Models\Wechat;
 use App\Models\JobCategory;
+use App\Models\User;
 class UsersController extends Controller
 {
 	/**
@@ -20,8 +21,8 @@ class UsersController extends Controller
         $sub_job_category_name = '';
         //工作类型
         if ($user->category_id) {
-            $job_category = $category->where('id', $user->category_id)->first();
-            $sub_job_category = $category->where('id', $job_category->parent_id)->first();
+            $sub_job_category = $category->where('id', $user->category_id)->first();
+            $job_category = $category->where('id', $sub_job_category->parent_id)->first();
             $job_category_name = $job_category->name;
             $sub_job_category_name = $sub_job_category->name;
         }

@@ -39,8 +39,8 @@ class User extends Authenticatable
 
     public function isJoined($job)
     {
-        $count = ApplicationForm::where('user_id', $this->id)->where('job_id', $job->id)->count();
-        return $count?true:false;
+        $count = $this->forms()->where('job_id', $job->id)->count();
+        return $count?1:0;
     }
 
     public function collectJob($job)
@@ -79,5 +79,9 @@ class User extends Authenticatable
     public function wechat()
     {
         return $this->hasOne(Wechat::class);
+    }
+    public function collects()
+    {
+        return $this->hasMany(JobCollect::class);
     }
 }
