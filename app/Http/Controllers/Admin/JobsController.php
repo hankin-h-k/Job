@@ -17,7 +17,7 @@ class JobsController extends Controller
      */
     public function jobs(Request $request, Job $job)
     {   
-        $jobs = $job->orderBy('is_top', 'desc')->orderBy('is_recommend', 'desc')->orderBy('id', 'desc');
+        $jobs = $job->orderBy('id', 'desc');
         $status = $request->input('status');
         if ($status && $status != 'ALL') {
             $jobs = $jobs->where('status', $status);
@@ -50,23 +50,26 @@ class JobsController extends Controller
      */
     public function storeJob(Request $request, Job $job)
     {
+        $data['pic'] = $request->input('pic');
     	$data['title'] = $request->input('title');
         $data['sub_title'] = $request->input('sub_title');
-    	$data['job_time'] = $request->input('job_time');
-    	$data['province'] = $request->input('province');
+        $data['reward'] = $request->input('reward');
+        $data['need_num'] = $request->input('need_num');
         $data['category_id'] = $request->input('category');
+    	$data['job_time'] = $request->input('job_time');
+        $data['pay_type'] = $request->input('pay_type');
+        $data['linkman'] = $request->input('linkman');
+        $data['link_mobile'] = $request->input('link_mobile');
+        $data['wechat'] = $request->input('wechat');
+        $data['link_email'] = $request->input('link_email');
+    	$data['province'] = $request->input('province');
     	$data['city'] = $request->input('city');
     	$data['dist'] = $request->input('dist');
     	$data['address'] = $request->input('address');
     	$data['lng'] = $request->input('lng');
     	$data['lat'] = $request->input('lat');
-    	$data['pay_type'] = $request->input('pay_type');
-    	$data['reward'] = $request->input('reward');
-    	$data['need_num'] = $request->input('need_num');
     	$data['intro'] = $request->input('intro');
         $data['explain'] = $request->input('explain');
-    	$data['linkman'] = $request->input('linkman');
-    	$data['link_mobile'] = $request->input('link_mobile');
     	$job = $job->create($data);
     	return $this->success('ok', $job);
     }
@@ -88,12 +91,21 @@ class JobsController extends Controller
         if ($request->has('sub_title') && $request->sub_title != $job->sub_title) {
             $job->sub_title = $request->sub_title;
         }
+        if ($request->has('reward') && $request->reward != $job->reward) {
+            $job->reward = $request->reward;
+        }
+        if ($request->has('need_num') && $request->need_num != $job->need_num) {
+            $job->need_num = $request->need_num;
+        }
         if ($request->has('category_id') && $request->category_id != $job->category_id) {
             $job->category_id = $request->category_id;
         }
     	if ($request->has('job_time') && $request->job_time != $job->job_time) {
     		$job->job_time = $request->job_time;
     	}
+        if ($request->has('pay_type') && $request->pay_type != $job->pay_type) {
+            $job->pay_type = $request->pay_type;
+        }
     	if ($request->has('province') && $request->province != $job->province) {
     		$job->province = $request->province;
     	}
@@ -111,15 +123,6 @@ class JobsController extends Controller
     	}
     	if ($request->has('lat') && $request->lat != $job->lat) {
     		$job->lat = $request->lat;
-    	}
-    	if ($request->has('pay_type') && $request->pay_type != $job->pay_type) {
-    		$job->pay_type = $request->pay_type;
-    	}
-    	if ($request->has('reward') && $request->reward != $job->reward) {
-    		$job->reward = $request->reward;
-    	}
-    	if ($request->has('need_num') && $request->need_num != $job->need_num) {
-    		$job->need_num = $request->need_num;
     	}
     	if ($request->has('intro') && $request->intro != $job->intro) {
     		$job->intro = $request->intro;
