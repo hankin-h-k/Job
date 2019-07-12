@@ -64,6 +64,11 @@ Route::middleware(['auth:api'])->group(function () {
 		 * 首页
 		 */
 		Route::get('home', 'HomeController@home');
+
+		/**
+		 * 地区
+		 */
+		Route::get('addresses', 'HomeController@addresses');
     });
 
 

@@ -80,3 +80,4 @@ Route::get('admins', 'Admin\UsersController@adminUsers');
 Route::get('users/{user}/admin', 'Admin\UsersController@updateAdmin');
 
 Route::get('new/user/num', 'Admin\UsersController@newUserNum');
+Route::get('addresses', 'HomeController@addresses');
