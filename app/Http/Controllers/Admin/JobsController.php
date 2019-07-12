@@ -51,8 +51,10 @@ class JobsController extends Controller
     public function storeJob(Request $request, Job $job)
     {
     	$data['title'] = $request->input('title');
+        $data['sub_title'] = $request->input('sub_title');
     	$data['job_time'] = $request->input('job_time');
     	$data['province'] = $request->input('province');
+        $data['category_id'] = $request->input('category');
     	$data['city'] = $request->input('city');
     	$data['dist'] = $request->input('dist');
     	$data['address'] = $request->input('address');
