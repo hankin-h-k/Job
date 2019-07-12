@@ -69,7 +69,7 @@ class UsersController extends Controller
     {
         $users = $user->where('is_admin', 1);
         $keyword = $request->input('keyword');
-        if (empty($keyword)) {
+        if (!empty($keyword)) {
             $keyword = trim($keyword);
             $users = $users->where(function($sql) use($keyword){
                 $sql->where('name', 'like', '%'.$keyword.'%')
