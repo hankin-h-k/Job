@@ -83,3 +83,4 @@ Route::get('new/user/num', 'Admin\UsersController@newUserNum');
 Route::get('addresses', 'HomeController@addresses');
 
 Route::get('collects', 'UsersController@myCollectJobs');
+

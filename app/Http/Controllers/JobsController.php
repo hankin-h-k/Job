@@ -7,6 +7,7 @@ use App\Models\Job;
 use App\Models\ApplicationForm;
 use App\Models\JobCategory;
 use App\Models\Address;
+use App\Models\User;
 class JobsController extends Controller
 {
     /**
@@ -83,6 +84,25 @@ class JobsController extends Controller
         ]);
         //报名人数+1
         $job->increment('joined_num', 1);
+        return $this->success('ok');
+    }
+
+    /**
+     * 取消报名
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
+    public function cancelJoinJob(Request $request, Job $job)
+    {   
+        $user = auth()->user();
+        $user = User::find(1);
+        $result = $user->isJoined($job);
+        if (empty($result)) {
+            return $this->failure('还未报名该工作');
+        }
+        $user->forms()->where('job_id', $job->id)->delete();
+        $job->decrement('joined_num', 1);
         return $this->success('ok');
     }
 

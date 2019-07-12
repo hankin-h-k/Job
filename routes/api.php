@@ -41,6 +41,8 @@ Route::middleware(['auth:api'])->group(function () {
 		Route::get('jobs/{job}', 'JobsController@job');
 		//工作报名
 		Route::post('join/jobs/{job}', 'JobsController@joinJob');
+		//取消报名
+		Route::post('cancel/join/jobs/{job}', 'JobsController@cancelJoinJob');
 		//收餐工作
 		Route::post('collect/jobs/{job}', 'JobsController@collectJob');
 		//工作类型
