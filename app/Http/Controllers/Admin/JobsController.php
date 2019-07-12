@@ -85,6 +85,9 @@ class JobsController extends Controller
     	if ($request->has('title') && $request->title != $job->title) {
     		$job->title = $request->title;
     	}
+        if ($request->has('sub_title') && $request->sub_title != $job->sub_title) {
+            $job->sub_title = $request->sub_title;
+        }
         if ($request->has('category_id') && $request->category_id != $job->category_id) {
             $job->category_id = $request->category_id;
         }
