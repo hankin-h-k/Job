@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAds extends Migration
+class TableJobsAddExplain extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateAds extends Migration
      */
     public function up()
     {
-        Schema::create('ads', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('pic')->nullable()->comment('图片');
-            $table->string('path')->nullable()->comment('地址');
-            $table->timestamps();
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->text('explain')->nullable()->comment('说明')->after('intro');
         });
     }
 
@@ -28,6 +25,8 @@ class CreateAds extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ads');
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->dropColumn('explain');
+        });
     }
 }

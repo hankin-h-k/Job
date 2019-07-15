@@ -39,15 +39,15 @@ class User extends Authenticatable
 
     public function isJoined($job)
     {
-        $count = ApplicationForm::where('user_id', $this->id)->where('job_id', $job->id)->count();
-        return $count?true:false;
+        $count = $this->forms()->where('job_id', $job->id)->count();
+        return $count?1:0;
     }
 
     public function collectJob($job)
     {
         $collect = JobCollect::where('user_id', $this->id)->where('job_id', $job->id)->first();
         if ($collect) {
-            $collect->delect();
+            $collect->delete();
         }else{
             $this->jobCollects()->create(['job_id'=>$job->id]);
         }
@@ -57,9 +57,10 @@ class User extends Authenticatable
     public function getValidFormId()
     {
         $seven_day_age = date('Y-m-d H:i:s', strtotime('-7 day'));
-        $form = $this->forms()->where('status', 0)->where('created_at', '>', $seven_day_age)->orderBy('id', 'asc')->first();
+        $form = $this->formIds()->where('status', 0)->where('created_at', '>', $seven_day_age)->orderBy('id', 'asc')->first();
         return $form;
     }
+
     public function forms()
     {
         return $this->hasMany(ApplicationForm::class);
@@ -78,5 +79,9 @@ class User extends Authenticatable
     public function wechat()
     {
         return $this->hasOne(Wechat::class);
+    }
+    public function collects()
+    {
+        return $this->hasMany(JobCollect::class);
     }
 }

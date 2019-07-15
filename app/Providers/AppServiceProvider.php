@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\WechatService; 
+use App\Services\UploadService; 
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +28,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('wechatservice', function(){
             return new WechatService();
         });  
+        $this->app->singleton('uploadservice', function(){
+            return new UploadService();
+        });
     }
 }

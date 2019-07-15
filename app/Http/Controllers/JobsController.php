@@ -7,6 +7,7 @@ use App\Models\Job;
 use App\Models\ApplicationForm;
 use App\Models\JobCategory;
 use App\Models\Address;
+use App\Models\User;
 class JobsController extends Controller
 {
     /**
@@ -27,6 +28,17 @@ class JobsController extends Controller
         if ($category_id) {
             $jobs = $jobs->where('category_id', $category_id);
         }
+        $dist = $request->input('dist');
+        if ($dist) {
+            $jobs = $jobs->where('dist', $dist);
+        }
+        $order = $request->input('order');
+        if ($order == 'new') {
+            $jobs = $jobs->orderBy('id', 'desc');
+        }else{
+            $jobs = $jobs->orderBy('is_top', 'desc')->where('is_recommend', 'desc')->orderBy('id', 'desc');
+        }      
+
         $jobs = $jobs->paginate();
         return $this->success('ok', $jobs);
     }
@@ -34,21 +46,27 @@ class JobsController extends Controller
       /**
       * 工作详情
       */
-    public function job(Request $request, Job $job)
+    public function job(Request $request, Job $job, JobCategory $category)
     {
-        $job_category_name = '';
-        $sub_jon_category_name = '';
+        $category_name = '';
+        $sub_category_name = '';
         //工作类型
         if ($job->category_id) {
             $job_category = $category->where('id', $job->category_id)->first();
             $sub_jon_category = $category->where('id', $job_category->parent_id)->first();
-            $job_category_name = $job_category->name;
-            $sub_jon_category_name = $sub_jon_category->name;
+            $category_name = $job_category->name;
+            $sub_category_name = $sub_jon_category->name;
         }
-        $job->job_category_name = $job_category_name;
-        $job->sub_jon_category_name = $sub_jon_category_name;
+        $job->category_name = $category_name;
+        $job->sub_category_name = $sub_category_name;
+        $category = $job->category;
         //已报名人
-        $members = $job->forms()->with('user')->limit(6)->get();
+        $members = $job->forms()->with('user')->limit(6)->orderBy('id', 'desc')->get();
+        $user = auth()->user();
+        //是否收藏
+        $job->is_collected = $user->jobCollects()->where('job_id', $job->id)->first()?1:0;
+        //是否报名
+        $job->is_joined = $user->isJoined($job);
         return $this->success('ok', compact('job', 'members'));
     }
 
@@ -81,6 +99,25 @@ class JobsController extends Controller
     }
 
     /**
+     * 取消报名
+     * @param  Request $request [description]
+     * @param  Job     $job     [description]
+     * @return [type]           [description]
+     */
+    public function cancelJoinJob(Request $request, Job $job)
+    {   
+        $user = auth()->user();
+        $user = User::find(1);
+        $result = $user->isJoined($job);
+        if (empty($result)) {
+            return $this->failure('还未报名该工作');
+        }
+        $user->forms()->where('job_id', $job->id)->delete();
+        $job->decrement('joined_num', 1);
+        return $this->success('ok');
+    }
+
+    /**
      * 收藏工作
      * @param  Request $request [description]
      * @param  Job     $job     [description]
@@ -100,12 +137,12 @@ class JobsController extends Controller
      * @param  JobCategory $category [description]
      * @return [type]                [description]
      */
-    public function jobCategories(Request $request, JobCategory $category)
+    public function jobCategories(Request $request, JobCategory $category_obj)
     {
-        $categories = $category->where('parent_id', 0)->get();
-        foreach ($categories as $category_obj) {
-            $sub_categories = $category->where('parent_id', $category_obj->id)->get();
-            $category_obj->sub_categories = $sub_categories;
+        $categories = $category_obj->where('parent_id', 0)->get();
+        foreach ($categories as $category) {
+            $sub_categories = $category_obj->where('parent_id', $category->id)->get();
+            $category->sub_categories = $sub_categories;
         }
         return $this->success('ok', $categories);
     }

@@ -7,6 +7,7 @@ use App\Utils\Str;
 use App\Models\ApplicationForm;
 use App\Models\Wechat;
 use App\Models\JobCategory;
+use App\Models\User;
 class UsersController extends Controller
 {
 	/**
@@ -17,16 +18,26 @@ class UsersController extends Controller
     {
     	$user = auth()->user();
         $job_category_name = '';
-        $sub_jon_category_name = '';
+        $sub_job_category_name = '';
         //工作类型
         if ($user->category_id) {
-            $job_category = $category->where('id', $user->category_id)->first();
-            $sub_jon_category = $category->where('id', $job_category->parent_id)->first();
-            $job_category_name = $job_category->name;
-            $sub_jon_category_name = $sub_jon_category->name;
+            $sub_job_category = $category->where('id', $user->category_id)->first();
+            if (empty($sub_job_category)) {
+                $job_category_name = '';
+                $sub_job_category_name = '';
+            }else{
+                $job_category = $category->where('id', $sub_job_category->parent_id)->first();
+                if (empty($job_category)) {
+                    $job_category_name = '';
+                }else{
+                    $job_category_name = $job_category->name;
+                }
+                $sub_job_category_name = $sub_job_category->name;
+            }
+            
         }
         $user->job_category_name = $job_category_name;
-        $user->sub_jon_category_name = $sub_jon_category_name;
+        $user->sub_job_category_name = $sub_job_category_name;
         $wechat = $user->wechat;
     	return $this->success('ok', $user);
     }
@@ -119,10 +130,13 @@ class UsersController extends Controller
      * @param  ApplicationForm $form    [description]
      * @return [type]                   [description]
      */
-    public function myApplicationForm(Request $request)
+    public function myApplicationForms(Request $request)
     {
         $user = auth()->user();
-        $forms = $user->forms()->with('job')->orderBy('id', 'desc')->paginate();
+        $status = $request->input('status');
+        $forms = $user->forms()->with('job')->whereHas('job', function($sql) use($status){
+            $sql->where('status', $status);
+        })->orderBy('id', 'desc')->paginate();
         return $this->success('ok', $forms);
     }
 
@@ -131,7 +145,7 @@ class UsersController extends Controller
      * @param  Request $request [description]
      * @return [type]           [description]
      */
-    public function myCollects(Request $request)
+    public function myCollectJobs(Request $request)
     {
         $user = auth()->user();
         $collects = $user->collects()->with('job')->orderBy('id', 'desc')->paginate();

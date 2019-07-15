@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +15,8 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        'password',
+        'password_confirmation',
     ];
 
     /**
@@ -49,27 +52,43 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 
-    // public function prepareJsonResponse($request, Exception $e)
-    // {
-    //     $data['status'] = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-    //     if(config('app.debug')){
-    //         $data['file'] = $e->getFile();
-    //         $data['line'] = $e->getLine();
-    //         $data['traces'] = $e->getTrace();
-    //     }
+    /**
+     * Convert an authentication exception into an unauthenticated response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Illuminate\Http\Response
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['code'=>2, 'message' => '请登录后访问.'], 200);
+        }
 
-    //     $headers = $this->isHttpException($e) ? $e->getHeaders() : [];
-    //     $message = $e->getMessage();
-    //     if ($message == 'The given payload is invalid.') {
-    //         $message = '服务错误，请重试';
-    //     }
-    //     return new JsonResponse(
-    //         [ 'code'=>1,
-    //             'data'=>$data,
-    //             'message'=>$data['status'].':'.$message
-    //         ], 200, $headers,
-    //         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-    //     );
+        return redirect()->guest(route('login'));
+    }
+
+    public function prepareJsonResponse($request, Exception $e)
+    {
+        $data['status'] = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+        if(config('app.debug')){
+            $data['file'] = $e->getFile();
+            $data['line'] = $e->getLine();
+            $data['traces'] = $e->getTrace();
+        }
+
+        $headers = $this->isHttpException($e) ? $e->getHeaders() : [];
+        $message = $e->getMessage();
+        if ($message == 'The given payload is invalid.') {
+            $message = '服务错误，请重试';
+        }
+        return new JsonResponse(
+            [ 'code'=>1,
+                'data'=>$data,
+                'message'=>$data['status'].':'.$message
+            ], 200, $headers,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
         
-    // }
+    }
 }

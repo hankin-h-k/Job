@@ -9,7 +9,7 @@ class AdsController extends Controller
 {
     public function ads(Request $request, Ad $ad)
     {
-    	$ads = $ad->orderBy('id', 'desc')->paginate();
+    	$ads = $ad->orderBy('id', 'desc')->get();
     	return $this->success('ok', $ads);
     }
 
@@ -30,12 +30,22 @@ class AdsController extends Controller
     	return $this->success('ok', $ad);
     }
 
-    public function storeAd(Request $request, Ad $ad)
+    public function storeAd(Request $request, Ad $ad_obj)
     {
-    	$data['pic'] = $request->input('pic');
-    	$data['path'] = $request->input('path');
-    	$ad = $ad->create($data);
-    	return $this->success('ok', $data);
+    	//删除已有的
+        $ad_obj->where('id', '>', 0)->delete();
+        //创建最新的
+        $ads = $request->input('ads');
+        if ($ads && count($ads)) {
+            foreach ($ads as $ad) {
+                $ad = $ad_obj->create([
+                    'path'=>$ad['path'],
+                    'pic'=>isset($ad['pic'])?$ad['pic']:null,
+                    'content'=>$ad['content'],
+                ]);
+            }
+        }
+        return $this->success('ok');
     }
 
     public function deleteAd(Request $request, Ad $ad)
