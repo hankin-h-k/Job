@@ -26,7 +26,7 @@ Route::post('wechat/mobile', 'Auth\LoginController@getPhone');
 	//兼职列表
 	Route::get('jobs', 'Admin\JobsController@jobs');
 	//兼职详情
-	Route::get('jobs/{job}', 'Admin\JobsController@job')->where('job', '[0-9]+');
+	Route::get('jobs/{job}', 'JobsController@job')->where('job', '[0-9]+');
 	//兼职删除
 	Route::delete('jobs/{job}', 'Admin\JobsController@deleteJob');
 	//兼职修改
@@ -58,29 +58,7 @@ Route::post('wechat/mobile', 'Auth\LoginController@getPhone');
 
 
 // });
-/**
- * 文章
- */
-//文章列表
-Route::get('articles', 'Admin\ArticlesController@articles');
-//文章详情
-Route::get('articles/{article}', 'Admin\ArticlesController@article');
-//文章创建
-Route::get('add/articles', 'Admin\ArticlesController@storeArticle');
-//文章修改
-Route::get('update/articles/{article}', 'Admin\ArticlesController@updateArticle');
-//文章删除
-Route::get('del/articles/{article}', 'Admin\ArticlesController@deleteArticle');
 
-Route::get('test', 'Controller@test');
-
-Route::get('jobs/{job}/members', 'Admin\JobsController@jobMembers');
-
-Route::get('admins', 'Admin\UsersController@adminUsers');
-Route::get('users/{user}/admin', 'Admin\UsersController@updateAdmin');
-
-Route::get('new/user/num', 'Admin\UsersController@newUserNum');
-Route::get('addresses', 'HomeController@addresses');
-
-Route::get('collects', 'UsersController@myCollectJobs');
+Route::get('articles', 'HomeController@articles');
+Route::get('articles/{article}', 'HomeController@article');
 

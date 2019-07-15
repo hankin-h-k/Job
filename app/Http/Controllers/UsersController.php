@@ -22,9 +22,19 @@ class UsersController extends Controller
         //工作类型
         if ($user->category_id) {
             $sub_job_category = $category->where('id', $user->category_id)->first();
-            $job_category = $category->where('id', $sub_job_category->parent_id)->first();
-            $job_category_name = $job_category->name;
-            $sub_job_category_name = $sub_job_category->name;
+            if (empty($sub_job_category)) {
+                $job_category_name = '';
+                $sub_job_category_name = '';
+            }else{
+                $job_category = $category->where('id', $sub_job_category->parent_id)->first();
+                if (empty($job_category)) {
+                    $job_category_name = '';
+                }else{
+                    $job_category_name = $job_category->name;
+                }
+                $sub_job_category_name = $sub_job_category->name;
+            }
+            
         }
         $user->job_category_name = $job_category_name;
         $user->sub_job_category_name = $sub_job_category_name;

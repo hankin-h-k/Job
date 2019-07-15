@@ -28,6 +28,17 @@ class JobsController extends Controller
         if ($category_id) {
             $jobs = $jobs->where('category_id', $category_id);
         }
+        $dist = $request->input('dist');
+        if ($dist) {
+            $jobs = $jobs->where('dist', $dist);
+        }
+        $order = $request->input('order');
+        if ($order == 'new') {
+            $jobs = $jobs->orderBy('id', 'desc');
+        }else{
+            $jobs = $jobs->orderBy('is_top', 'desc')->where('is_recommend', 'desc')->orderBy('id', 'desc');
+        }      
+
         $jobs = $jobs->paginate();
         return $this->success('ok', $jobs);
     }

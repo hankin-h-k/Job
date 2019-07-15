@@ -51,4 +51,28 @@ class HomeController extends Controller
         }
         return $this->success('ok', $addresses);
     }
+
+    /**
+     * 文章列表
+     * @param  Request $request [description]
+     * @param  Article $article [description]
+     * @return [type]           [description]
+     */
+    public function articles(Request $request, Article $article)
+    {
+        $articles = $article->orderBy('id', 'desc');
+        $keyword = $request->input('keyword');
+        if ($keyword) {
+            $keyword = trim($keyword);
+            $articles = $articles->where('title', 'like', '%'.$keyword.'%');
+        }
+        $articles = $articles->paginate();
+        return $this->success('ok', $articles);
+    }
+
+
+    public function article(Request $request, Article $article)
+    {
+        return $this->success('ok', $article);
+    }
 }

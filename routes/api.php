@@ -71,6 +71,12 @@ Route::middleware(['auth:api'])->group(function () {
 		 * 地区
 		 */
 		Route::get('addresses', 'HomeController@addresses');
+
+		/**
+		 * 文章
+		 */
+		Route::get('articles', 'HomeController@articles');
+		Route::get('articles/{article}', 'HomeController@article');
     });
 
 
