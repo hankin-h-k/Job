@@ -1,20 +1,15 @@
 <?php namespace App\Services;
 
 use OSS\OssClient;
+use Illuminate\Support\Facades\Storage;
+
 
 class UploadService
 {
-	protected $disk;
-    protected $mimeDetect;
-
-    public function __construct(PhpRepository $mimeDetect)
-    {
-        $this->disk = Storage::disk(config('blog.uploads.storage'));
-        $this->mimeDetect = $mimeDetect;
-    }
 
     //上传文件　
-    public function uploadFile($file){
+    public function uploadFile($file)
+    {
 
         //生成新二维码云端全URI
         $object = date('Y').date('m')."/".date('d')."/".$file['name'];
@@ -41,7 +36,8 @@ class UploadService
     }
 
     //获取Web真传签名
-    public function aliyunSignature($request){
+    public function aliyunSignature($request)
+    {
 
 		$id= config('alioss.id');
 		$key= config('alioss.secret');
@@ -92,7 +88,8 @@ class UploadService
     }
 
     //aliyun get signature using
-	private function gmt_iso8601($time) {
+	private function gmt_iso8601($time) 
+    {
 		$dtStr = date("c", $time);
 		$mydatetime = new \DateTime($dtStr);
 		$expiration = $mydatetime->format(\DateTime::ISO8601);
@@ -101,128 +98,35 @@ class UploadService
 		return $expiration."Z";
 	}
 
-
-	/**
-     * Return files and directories within a folder
-     *
-     * @param string $folder
-     * @return array of [
-     *     'folder' => 'path to current folder',
-     *     'folderName' => 'name of just current folder',
-     *     'breadCrumbs' => breadcrumb array of [ $path => $foldername ]
-     *     'folders' => array of [ $path => $foldername] of each subfolder
-     *     'files' => array of file details on each file in folder
-     * ]
-     */
-    public function folderInfo($folder)
+    public function uploadToLocal($file, $disk = 'public')
     {
-        $folder = $this->cleanFolder($folder);
-
-        $breadcrumbs = $this->breadcrumbs($folder);
-        $slice = array_slice($breadcrumbs, -1);
-        $folderName = current($slice);
-        $breadcrumbs = array_slice($breadcrumbs, 0, -1);
-
-        $subfolders = [];
-        foreach (array_unique($this->disk->directories($folder)) as $subfolder) {
-            $subfolders["/$subfolder"] = basename($subfolder);
+         // 1.是否上传成功
+        if (! $file->isValid()) {
+           return false;
         }
 
-        $files = [];
-        foreach ($this->disk->files($folder) as $path) {
-            $files[] = $this->fileDetails($path);
+        // 2.是否符合文件类型 getClientOriginalExtension 获得文件后缀名
+        $fileExtension = $file->getClientOriginalExtension();
+        if(! in_array($fileExtension, ['png', 'jpg', 'JPG', 'PNG'])) {
+            return false;
         }
 
-        return compact(
-            'folder',
-            'folderName',
-            'breadcrumbs',
-            'subfolders',
-            'files'
-        );
-    }
-
-    /**
-     * Sanitize the folder name
-     */
-    protected function cleanFolder($folder)
-    {
-        return '/' . trim(str_replace('..', '', $folder), '/');
-    }
-
-    /**
-     * 返回当前目录路径
-     */
-    protected function breadcrumbs($folder)
-    {
-        $folder = trim($folder, '/');
-        $crumbs = ['/' => 'root'];
-
-        if (empty($folder)) {
-            return $crumbs;
+        // 3.判断大小是否符合 2M
+        $tmpFile = $file->getRealPath();
+        if (filesize($tmpFile) >= 4096000) {
+            return false;
         }
 
-        $folders = explode('/', $folder);
-        $build = '';
-        foreach ($folders as $folder) {
-            $build .= '/' . $folder;
-            $crumbs[$build] = $folder;
+        // 4.是否是通过http请求表单提交的文件
+        if (! is_uploaded_file($tmpFile)) {
+            dd(1);
+            return false;
         }
 
-        return $crumbs;
-    }
-
-    /**
-     * 返回文件详细信息数组
-     */
-    protected function fileDetails($path)
-    {
-        $path = '/' . ltrim($path, '/');
-
-        return [
-            'name' => basename($path),
-            'fullPath' => $path,
-            'webPath' => $this->fileWebpath($path),
-            'mimeType' => $this->fileMimeType($path),
-            'size' => $this->fileSize($path),
-            'modified' => $this->fileModified($path),
-        ];
-    }
-
-    /**
-     * 返回文件完整的web路径
-     */
-    public function fileWebpath($path)
-    {
-        $path = rtrim(config('blog.uploads.webpath'), '/') . '/' . ltrim($path, '/');
-        return url($path);
-    }
-
-    /**
-     * 返回文件MIME类型
-     */
-    public function fileMimeType($path)
-    {
-        return $this->mimeDetect->findType(
-            pathinfo($path, PATHINFO_EXTENSION)
-        );
-    }
-
-    /**
-     * 返回文件大小
-     */
-    public function fileSize($path)
-    {
-        return $this->disk->size($path);
-    }
-
-    /**
-     * 返回最后修改时间
-     */
-    public function fileModified($path)
-    {
-        return Carbon::createFromTimestamp(
-            $this->disk->lastModified($path)
-        );
+        // 5.每天一个文件夹,分开存储, 生成一个随机文件名
+        $fileName = date('Y_m_d').'/'.md5(time()) .mt_rand(0,9999).'.'. $fileExtension;
+        if (Storage::disk($disk)->put($fileName, file_get_contents($tmpFile)) ){
+            return Storage::url($fileName);
+        }
     }
 }

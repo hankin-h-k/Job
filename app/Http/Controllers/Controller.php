@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class Controller extends BaseController
 {
@@ -73,5 +74,23 @@ class Controller extends BaseController
             $day_arr[] = date('Y-m-d',$strtime1); // 取得递增月;   
         } 
         return $day_arr; 
+    }
+
+    public function uploadToLocal(Request $request)
+    {
+	    $file = $request->file('img');
+	    $fileName = \UploadService::uploadToLocal($file);
+        if ($fileName){
+            return $fileName;
+        }
+        return '上传失败';
+        // $file = $_FILES['file'];
+        // $fileName = $request->get('file_name');
+        // $fileName = $fileName ?: $file['name'];
+        // $path = str_finish($request->get('folder'), '/') . $fileName;
+        // $content = File::get($file['tmp_name']);
+
+        // $result = $this->manager->saveFile($path, $content);
+
     }
 }
