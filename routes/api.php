@@ -55,6 +55,8 @@ Route::middleware(['auth:api'])->group(function () {
 		Route::get('user', 'UsersController@user');
 		//修改简历
 		Route::put('user', 'UsersController@updateUser');
+		//修改头像
+		Route::put('user/avatar', 'UsersController@updateUserAvatar');
 		//修改微信信息
 		Route::put('wechat', 'UsersController@updateWechat');
 		//我的报名
@@ -78,8 +80,8 @@ Route::middleware(['auth:api'])->group(function () {
 		Route::get('articles', 'HomeController@articles');
 		Route::get('articles/{article}', 'HomeController@article');
     });
-//图片上传
-Route::post('upload', 'Controller@uploadToLocal');
+	//图片上传
+	Route::post('uploads', 'Controller@uploadToLocal');
 
 });
 

@@ -107,7 +107,6 @@ class JobsController extends Controller
     public function cancelJoinJob(Request $request, Job $job)
     {   
         $user = auth()->user();
-        $user = User::find(1);
         $result = $user->isJoined($job);
         if (empty($result)) {
             return $this->failure('还未报名该工作');

@@ -78,7 +78,10 @@ class Controller extends BaseController
 
     public function uploadToLocal(Request $request)
     {
-	    $file = $request->file('img');
+	    // $file = $request->file('file');
+     //    dd($file);
+        $file = $_FILES['fileData'];
+        // dd($request->input('file'));
 	    $fileName = \UploadService::uploadToLocal($file);
         if (is_array($fileName)){
             if (isset($fileName['is_valid']) && empty($fileName['is_valid'])) {

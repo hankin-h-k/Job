@@ -151,4 +151,16 @@ class UsersController extends Controller
         $collects = $user->collects()->with('job')->orderBy('id', 'desc')->paginate();
         return $this->success('ok', $collects);
     }
+
+    public function updateUserAvatar(Request $request)
+    {
+        $user = auth()->user();
+        $avatar = $request->input('avatar');
+        if (empty($avatar)) {
+            return $this->failure('请上传头像');
+        }
+        $user->avatar = $avatar;
+        $user->save();
+        return $this->success('ok', $user);
+    }
 }
