@@ -64,3 +64,4 @@ Route::post('wechat/mobile', 'Auth\LoginController@getPhone');
 
 Route::get('articles', 'HomeController@articles');
 Route::get('articles/{article}', 'HomeController@article');
+Route::post('upload', 'Controller@uploadToLocal');

@@ -91,7 +91,7 @@ class Controller extends BaseController
                 return $this->failure('图片上传有误！');
             }
         }
-        $path = conf('app.url').fileName;
+        $path = config('app.url').$fileName;
         return $this->success('ok', $path);
     }
 }
