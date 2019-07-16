@@ -80,17 +80,18 @@ class Controller extends BaseController
     {
 	    $file = $request->file('img');
 	    $fileName = \UploadService::uploadToLocal($file);
-        if ($fileName){
-            return $fileName;
+        if (is_array($fileName)){
+            if (isset($fileName['is_valid']) && empty($fileName['is_valid'])) {
+                return $this->failure('图片无效！');
+            }elseif (isset($fileName['extension']) && empty($fileName['extension'])) {
+                return $this->failure('图片扩展名有误！');
+            }elseif (isset($fileName['size']) && empty($fileName['size'])) {
+                return $this->failure('图片尺寸大于4M！');
+            }elseif (isset($fileName['request']) && empty($fileName['request'])) {
+                return $this->failure('图片上传有误！');
+            }
         }
-        return '上传失败';
-        // $file = $_FILES['file'];
-        // $fileName = $request->get('file_name');
-        // $fileName = $fileName ?: $file['name'];
-        // $path = str_finish($request->get('folder'), '/') . $fileName;
-        // $content = File::get($file['tmp_name']);
-
-        // $result = $this->manager->saveFile($path, $content);
-
+        $path = conf('app.url').fileName;
+        return $this->success('ok', $path);
     }
 }
