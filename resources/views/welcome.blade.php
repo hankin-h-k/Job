@@ -64,11 +64,6 @@
         </style>
     </head>
     <body>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            {{csrf_field()}}
-            <input type="file" name="img">
-            <button type="submit">提交</button>
-        </form>
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">
