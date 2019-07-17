@@ -17,6 +17,9 @@ class AddFormId
     public function handle($request, Closure $next)
     {
         $user = auth()->user();
+        if (empty($user)) {
+            return $next($request);
+        }
         $openid = null;
         if ($user->wechat && $user->wechat->openid) {
             $openid = $user->wechat->openid;
@@ -26,6 +29,7 @@ class AddFormId
             if (!is_array($form_ids)) {
                 $form_ids = explode(',', $form_ids);
             }
+            $user_id = $user->id;
             foreach ($form_ids as $form_id) {
                 if ($form_id == 'the formId is a mock one') {
                     continue;
@@ -40,6 +44,5 @@ class AddFormId
                 ]);
             }
         }
-        return $next($request);
     }
 }
