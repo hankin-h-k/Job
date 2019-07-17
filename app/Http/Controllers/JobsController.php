@@ -61,7 +61,7 @@ class JobsController extends Controller
         $job->sub_category_name = $sub_category_name;
         $category = $job->category;
         //已报名人
-        $members = $job->forms()->with('user')->limit(6)->orderBy('id', 'desc')->get();
+        $members = $job->forms()->with('user')->limit(7)->orderBy('id', 'desc')->get();
         $user = auth()->user();
         //是否收藏
         $job->is_collected = $user->jobCollects()->where('job_id', $job->id)->first()?1:0;
