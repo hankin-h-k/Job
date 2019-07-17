@@ -49,7 +49,8 @@ class Controller extends BaseController
 	public function upload(Request $request)
 	{
 		$file = $_FILES['fileData'];
-        \UploadService::uploadFile($file);
+        $result = \UploadService::uploadFile($file);
+        return $this->success('ok', $result);
 	}
 
 	public function aliyunSignature(Request $request)

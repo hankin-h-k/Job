@@ -81,7 +81,7 @@ Route::middleware(['auth:api'])->group(function () {
 		Route::get('articles/{article}', 'HomeController@article');
     });
 	//图片上传
-	Route::post('uploads', 'Controller@uploadToLocal');
+	Route::post('uploads', 'Controller@upload');
 
 });
 

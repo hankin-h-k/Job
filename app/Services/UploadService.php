@@ -10,17 +10,15 @@ class UploadService
     //上传文件　
     public function uploadFile($file)
     {
-
         //生成新二维码云端全URI
         $object = date('Y').date('m')."/".date('d')."/".$file['name'];
         $file_url = 'https://'.config('alioss.picture_domain').'/'.$object;
         require_once base_path('vendor/aliyuncs/oss-sdk-php').'/autoload.php';
-
         //连接aliyun oss server
         try {
             $ossClient = new \OSS\OssClient(config('alioss.id'), config('alioss.secret'), config('alioss.host'));
         } catch(\OSS\Core\OssException $e) {
-            return $this->failure('oss_connect_failure', $e->getMessage());
+            return $e->getMessage();
         }
 
 
@@ -28,10 +26,9 @@ class UploadService
         try {
             $result = $ossClient->uploadFile(config('alioss.buckets.picture'), $object, $file['tmp_name']);
         } catch(\OSS\Core\OssException $e) {
-            return $this->failure('oss_put_failure', $e->getMessage());
+            return $e->getMessage();
         }
-
-        return $this->success('upload_ok', $file_url);
+        return $file_url;
 
     }
 
