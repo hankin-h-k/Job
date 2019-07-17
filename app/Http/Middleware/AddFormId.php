@@ -17,7 +17,10 @@ class AddFormId
     public function handle($request, Closure $next)
     {
         $user = auth()->user();
-        $openid = $user->wechat->openid;
+        $openid = null;
+        if ($user->wechat && $user->wechat->openid) {
+            $openid = $user->wechat->openid;
+        }
         if ($user && $request->input('formId')) {
             $form_ids = $request->formId;
             if (!is_array($form_ids)) {
