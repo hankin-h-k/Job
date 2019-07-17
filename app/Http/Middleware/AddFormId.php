@@ -44,5 +44,6 @@ class AddFormId
                 ]);
             }
         }
+        return $next($request);
     }
 }
