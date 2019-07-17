@@ -78,12 +78,12 @@ class UsersController extends Controller
     	if ($request->name != $user->name) {
     		$user->name = $request->name;
     	}
-    	if ($request->has('mobile') && !Str::isMobile($request->mobile)) {
-    		return $this->failure('请输入正确的手机号');
-    	}
-    	if ($request->mobile != $user->mobile) {
-    		$user->mobile = $request->mobile;
-    	}
+    	// if ($request->has('mobile') && !Str::isMobile($request->mobile)) {
+    	// 	return $this->failure('请输入正确的手机号');
+    	// }
+    	// if ($request->mobile != $user->mobile) {
+    	// 	$user->mobile = $request->mobile;
+    	// }
     	if ($request->has("sex") && $request->sex != $user->sex) {
     		$user->sex = $request->sex;
     	}
