@@ -36,7 +36,7 @@ class JobsController extends Controller
         if ($order == 'new') {
             $jobs = $jobs->orderBy('id', 'desc');
         }else{
-            $jobs = $jobs->orderBy('is_top', 'desc')->where('is_recommend', 'desc')->orderBy('id', 'desc');
+            $jobs = $jobs->orderBy('is_top', 'desc')->orderBy('is_recommend', 'desc')->orderBy('id', 'desc');
         }      
 
         $jobs = $jobs->paginate();
