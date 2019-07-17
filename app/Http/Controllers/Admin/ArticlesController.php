@@ -41,6 +41,11 @@ class ArticlesController extends Controller
         if (empty($data['content'])) {
             return $this->failure('请输入文章内容');
         }
+        $data['type'] = $request->input('type');
+        if (empty($data['type'])) {
+            return $this->failure('请选择文章类型');
+        }
+        $data['path'] = $request->input('path');
     	$data['pic'] = $request->input('pic');
         
     	$article = $article->create($data);
@@ -61,6 +66,12 @@ class ArticlesController extends Controller
     	if ($request->has('content') && $request->content != $article->content) {
     		$article->content = $request->content;
     	}
+        if ($request->has('type') && $request->type != $article->type) {
+            $article->type = $request->type;
+        }
+        if ($request->has('path') && $request->path != $article->path) {
+            $article->path = $request->path;
+        }
     	$article->save();
     	return $this->success('ok', $article);
     }
