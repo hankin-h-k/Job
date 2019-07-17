@@ -14,8 +14,8 @@ class TanleArticlesAddType extends Migration
     public function up()
     {
         Schema::table('articles', function (Blueprint $table) {
-            $table->enum('type', ['MP', 'OF'])->nullable()->comment('mp:小程序，of:公众号');
-            $table->string('path')->nullable()->comment('链接');
+            $table->enum('type', ['MP', 'OF', 'H5'])->nullable()->comment('mp:小程序，of:公众号')->after('content');
+            $table->string('path')->nullable()->comment('链接')->after('type');
         });
     }
 
@@ -27,7 +27,7 @@ class TanleArticlesAddType extends Migration
     public function down()
     {
         Schema::table('articles', function (Blueprint $table) {
-            $table->dropColumn(['type', 'paht']);
+            $table->dropColumn(['type', 'path']);
         });
     }
 }
