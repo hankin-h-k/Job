@@ -38,9 +38,9 @@ class ArticlesController extends Controller
             return $this->failure('请输入文章子标题');
         }
         $data['content'] = $request->input('content');
-        if (empty($data['content'])) {
-            return $this->failure('请输入文章内容');
-        }
+        // if (empty($data['content'])) {
+        //     return $this->failure('请输入文章内容');
+        // }
         $data['type'] = $request->input('type');
         if (empty($data['type'])) {
             return $this->failure('请选择文章类型');
